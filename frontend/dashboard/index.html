@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Monitoring Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>IoT Monitoring Dashboard</h1>
+        </header>
+        
+        <div class="status-cards">
+            <div class="card">
+                <h2>Device Status</h2>
+                <div class="status-container" id="device-status">
+                    <!-- Status will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="sensorChart"></canvas>
+        </div>
+        
+        <div class="metrics-table">
+            <h2>Device Metrics</h2>
+            <table id="metrics">
+                <thead>
+                    <tr>
+                        <th>Device ID</th>
+                        <th>Location</th>
+                        <th>Power (kW)</th>
+                        <th>Voltage (V)</th>
+                        <th>Last Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

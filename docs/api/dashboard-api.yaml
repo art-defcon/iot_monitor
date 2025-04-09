@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: IoT Dashboard API
+  version: 1.0.0
+  description: API for retrieving gateway and sensor data for dashboard display
+
+servers:
+  - url: http://localhost:8082/api/dashboard
+    description: Local development server
+
+paths:
+  /gateways:
+    get:
+      tags: [Gateways]
+      summary: List all registered gateways
+      responses:
+        '200':
+          description: List of gateways
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gateway'
+  
+  /gateways/{gatewayId}/readings:
+    get:
+      tags: [Readings]
+      summary: Get recent readings for a gateway
+      parameters:
+        - name: gatewayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: hours
+          in: query
+          schema:
+            type: integer
+            default: 24
+      responses:
+        '200':
+          description: List of readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reading'
+        '404':
+          description: Gateway not found
+
+components:
+  schemas:
+    Gateway:
+      type: object
+      properties:
+        gatewayId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+        registeredAt:
+          type: string
+          format: date-time
+    
+    Reading:
+      type: object
+      properties:
+        readingId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        sensorLabel:
+          type: string
+        unit:
+          type: string
+        readingValue:
+          type: number
+          format: float

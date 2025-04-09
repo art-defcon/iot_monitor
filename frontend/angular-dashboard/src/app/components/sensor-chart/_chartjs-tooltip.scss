@@ -1,0 +1,37 @@
+:host ::ng-deep {
+  .chartjs-tooltip {
+    background: var(--card-bg) !important;
+    box-shadow: var(--shadow-2xl) !important;
+    border-radius: var(--radius-xl) !important;
+    padding: var(--spacing-4) !important;
+    border: 1px solid var(--border-color) !important;
+    font-family: var(--font-family) !important;
+    transition: all var(--transition-normal) !important;
+
+    .tooltip-title {
+      font-weight: var(--font-weight-bold) !important;
+      margin-bottom: var(--spacing-3) !important;
+      color: var(--primary-color) !important;
+      font-size: var(--font-size-sm) !important;
+    }
+
+    .tooltip-body {
+      font-size: var(--font-size-sm) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .tooltip-value {
+      color: var(--primary-color) !important;
+      font-weight: var(--font-weight-black) !important;
+      font-size: var(--font-size-md) !important;
+    }
+  }
+
+  .chartjs-tooltip-key {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: var(--spacing-2) !important;
+  }
+}

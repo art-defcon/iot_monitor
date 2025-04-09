@@ -1,0 +1,144 @@
+<div *ngIf="isLoading$ | async" class="loading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  
+  <div class="units-accordion">
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="unit-icon unit-celsius">
+            <mat-icon>thermostat</mat-icon>
+          </span>
+          Loading Measurements
+        </mat-panel-title>
+        <mat-panel-description>
+          4 sensors
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="skeleton-container">
+        <div *ngFor="let i of [0,1,2,3]" class="skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-status"></div>
+          </div>
+          <div class="skeleton-chart">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-dot"></div>
+            <div class="skeleton-dot"></div>
+            <div class="skeleton-dot"></div>
+            <div class="skeleton-dot"></div>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>
+
+<div *ngIf="error$ | async as error" class="error">
+  <mat-icon>error_outline</mat-icon>
+  <div class="error-details">
+    <h4>Error loading data</h4>
+    <p>{{ error }}</p>
+  </div>
+</div>
+
+<ng-container *ngIf="unitGroups$ | async as unitGroups">
+  <div *ngIf="unitGroups.length === 0 && !(isLoading$ | async)" class="no-data">
+    <mat-icon>sensors_off</mat-icon>
+    <h3>No sensor data available</h3>
+    <p>This gateway doesn't have any active sensors reporting data. Showing placeholder data instead.</p>
+    
+    <!-- Skeleton UI for when no data is available -->
+    <div *ngFor="let group of skeletonGroups" class="units-accordion">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <span class="unit-icon" [ngClass]="'unit-' + group.unit.toLowerCase()">
+              <mat-icon>{{ getUnitIcon(group.unit) }}</mat-icon>
+            </span>
+            {{ group.unit | titlecase }} Measurements
+          </mat-panel-title>
+          <mat-panel-description>
+            {{ group.sensors.length }} sensors
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="group-description">
+          <p>{{ getUnitDescription(group.unit) }}</p>
+        </div>
+
+        <div class="skeleton-container">
+          <div *ngFor="let sensor of group.sensors" class="skeleton-card">
+            <div class="skeleton-header">
+              <div class="skeleton-title"></div>
+              <div class="skeleton-status"></div>
+            </div>
+            <div class="skeleton-chart">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-dot"></div>
+              <div class="skeleton-dot"></div>
+              <div class="skeleton-dot"></div>
+              <div class="skeleton-dot"></div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+
+  <div *ngIf="unitGroups.length > 0" class="unit-groups-summary">
+    <div class="summary-card">
+      <div class="summary-icon">
+        <mat-icon>sensors</mat-icon>
+      </div>
+      <div class="summary-details">
+        <h4>Sensor Groups</h4>
+        <div class="summary-value">{{ unitGroups.length }}</div>
+      </div>
+    </div>
+    
+    <div class="summary-card">
+      <div class="summary-icon">
+        <mat-icon>device_hub</mat-icon>
+      </div>
+      <div class="summary-details">
+        <h4>Total Sensors</h4>
+        <div class="summary-value">{{ getTotalSensors(unitGroups) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <mat-accordion *ngIf="unitGroups.length > 0" class="units-accordion" multi>
+    <mat-expansion-panel *ngFor="let group of unitGroups; let i = index" [expanded]="i === 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="unit-icon" [ngClass]="'unit-' + group.unit.toLowerCase()">
+            <mat-icon>{{ getUnitIcon(group.unit) }}</mat-icon>
+          </span>
+          {{ group.unit | titlecase }} Measurements
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ group.sensors.length }} sensors
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="group-description">
+        <p>{{ getUnitDescription(group.unit) }}</p>
+      </div>
+
+      <div class="sensor-container">
+        <div *ngFor="let sensor of group.sensors" class="sensor-card">
+          <h3>
+            <span>{{ sensor.name }}</span>
+            <span class="sensor-status" [ngClass]="getSensorStatusClass(sensor)"></span>
+          </h3>
+          <app-sensor-chart [readings]="sensor.readings"></app-sensor-chart>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

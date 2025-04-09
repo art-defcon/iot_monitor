@@ -1,0 +1,63 @@
+// Import the theme functions
+@use '../../core/theme.scss' as theme;
+@use 'sass:color';
+
+.chart-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  // Using the theme function for border color
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    // Using the theme function for primary light color
+    border-color: var(--primary-light);
+  }
+
+  canvas {
+    display: block;
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+    // Using the theme functions for gradient colors
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--primary-color-rgb), 0.04),
+      rgba(var(--accent-color-rgb), 0.04)
+    );
+    padding: var(--spacing-3);
+    transition: all var(--transition-normal);
+
+    &:hover {
+      // Using the theme function for box shadow color
+      box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+    }
+  }
+}
+
+/* 
+ * Example of using a custom component theme mixin:
+ *
+ * @mixin chart-container-theme($theme) {
+ *   $color-config: mat.get-color-config($theme);
+ *   $primary-palette: map.get($color-config, 'primary');
+ *   $accent-palette: map.get($color-config, 'accent');
+ *   $is-dark: map.get($color-config, 'is-dark');
+ *   
+ *   .chart-container {
+ *     @if $is-dark {
+ *       background: mat.get-color-from-palette($primary-palette, 900);
+ *       color: mat.get-color-from-palette($primary-palette, 900-contrast);
+ *     } @else {
+ *       background: mat.get-color-from-palette($primary-palette, 50);
+ *       color: mat.get-color-from-palette($primary-palette, 900);
+ *     }
+ *   }
+ * }
+ */

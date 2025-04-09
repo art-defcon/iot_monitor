@@ -1,0 +1,40 @@
+<div class="app-container">
+  <header role="banner">
+    <div class="header-content">
+      <h1>IoT Monitor</h1>
+      <div class="header-actions">
+        <button mat-icon-button aria-label="Settings">
+          <mat-icon>settings</mat-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main role="main">
+    <div class="main-content">
+      <div class="sidebar" role="navigation">
+        <app-gateway-selector></app-gateway-selector>
+      </div>
+
+      <div class="content-area">
+        <ng-container *ngIf="selectedGateway; else noGateway">
+          <div *ngIf="isLoading" class="loading-container">
+            <div class="loading-content">
+              <div class="skeleton-header"></div>
+              <div class="skeleton-chart"></div>
+            </div>
+          </div>
+
+          <!-- Actual content -->
+          <app-unit-group *ngIf="!isLoading" [gatewayId]="selectedGateway.id"></app-unit-group>
+        </ng-container>
+        
+        <ng-template #noGateway>
+          <div class="no-gateway-selected" role="alert">
+            <p>Please select a gateway from the sidebar</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,363 @@
+openapi: 3.0.3
+info:
+  title: IoT Data Ingestion API
+  version: 1.0.0
+  description: API for registering gateways and ingesting IoT sensor data
+
+servers:
+  - url: http://localhost:8081/api/ingestion
+    description: Local development server
+
+paths:
+  /gateways:
+    get:
+      tags: [Gateways]
+      summary: List all registered gateways
+      responses:
+        '200':
+          description: List of gateways
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gateway'
+    
+    post:
+      tags: [Gateways]
+      summary: Register a new gateway
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GatewayRegistration'
+      responses:
+        '201':
+          description: Gateway registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /gateways/{gatewayId}:
+    get:
+      tags: [Gateways]
+      summary: Get gateway details
+      parameters:
+        - name: gatewayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Gateway details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '404':
+          description: Gateway not found
+    
+    patch:
+      tags: [Gateways]
+      summary: Update gateway metadata
+      parameters:
+        - name: gatewayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GatewayUpdate'
+      responses:
+        '200':
+          description: Gateway updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '404':
+          description: Gateway not found
+    
+    delete:
+      tags: [Gateways]
+      summary: Delete a gateway and all its readings
+      parameters:
+        - name: gatewayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Gateway deleted successfully
+        '404':
+          description: Gateway not found
+
+  /readings:
+    post:
+      tags: [Readings]
+      summary: Record a single reading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadingRequest'
+      responses:
+        '202':
+          description: Reading accepted for processing
+        '400':
+          description: Invalid input data
+        '404':
+          description: Gateway not found
+        '429':
+          description: Rate limit exceeded
+
+  /readings/batch:
+    post:
+      tags: [Readings]
+      summary: Record batch readings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchReadingRequest'
+      responses:
+        '202':
+          description: Readings accepted for processing
+        '400':
+          description: Invalid input data
+        '404':
+          description: Gateway not found
+        '413':
+          description: Request payload too large
+        '429':
+          description: Rate limit exceeded
+
+  /readings/{gatewayId}:
+    get:
+      tags: [Readings]
+      summary: Get readings for gateway
+      parameters:
+        - name: gatewayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: start
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reading'
+        '400':
+          description: Invalid time range
+        '404':
+          description: Gateway not found
+        '429':
+          description: Too many requests
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "rate_limit_exceeded"
+        message:
+          type: string
+          example: "Too many requests"
+        retryAfter:
+          type: integer
+          example: 30
+    
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "validation_failed"
+        message:
+          type: string
+          example: "Request validation failed"
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "powerKw"
+              message:
+                type: string
+                example: "must be a positive number"
+    
+    GatewayRegistration:
+      type: object
+      required: [name, location, model]
+      properties:
+        name:
+          type: string
+          example: "Main Floor Sensor"
+        location:
+          type: string
+          example: "Building A, Floor 2"
+        model:
+          type: string
+          example: "IoT-GW-2000"
+
+    GatewayUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Main Floor Sensor"
+        location:
+          type: string
+          example: "Building A, Floor 2"
+        model:
+          type: string
+          example: "IoT-GW-3000"
+
+    Gateway:
+      type: object
+      properties:
+        gatewayId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "Main Floor Sensor"
+        location:
+          type: string
+          example: "Building A, Floor 2"
+        model:
+          type: string
+          example: "IoT-GW-2000"
+        status:
+          type: string
+          example: "ACTIVE"
+        registeredAt:
+          type: string
+          format: date-time
+          example: "2025-04-08T09:15:00Z"
+
+    ReadingRequest:
+      type: object
+      required: [gatewayId, data]
+      properties:
+        gatewayId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        data:
+          type: object
+          required: [sensor, unit, reading, timestamp]
+          properties:
+            sensor:
+              type: string
+              example: "temp-1"
+            unit:
+              type: string
+              example: "celsius"
+            reading:
+              type: number
+              format: float
+              example: 24.3
+            timestamp:
+              type: string
+              format: date-time
+              example: "2025-04-07T12:00:00Z"
+
+    BatchReadingRequest:
+      type: object
+      required: [gatewayId, data]
+      properties:
+        gatewayId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        data:
+          type: array
+          items:
+            type: object
+            required: [sensor, unit, reading, timestamp]
+            properties:
+              sensor:
+                type: string
+                example: "temp-1"
+              unit:
+                type: string
+                example: "celsius"
+              reading:
+                type: number
+                format: float
+                example: 24.3
+              timestamp:
+                type: string
+                format: date-time
+                example: "2025-04-07T12:00:00Z"
+
+    Reading:
+      type: object
+      properties:
+        readingId:
+          type: string
+          example: "b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e"
+        gateway:
+          $ref: '#/components/schemas/Gateway'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-04-07T12:00:00Z"
+        sensorLabel:
+          type: string
+          example: "temp-1"
+        unit:
+          type: string
+          example: "celsius"
+        readingValue:
+          type: number
+          format: float
+          example: 24.3

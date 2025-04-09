@@ -1,0 +1,7 @@
+mat-progress-spinner {
+  margin-left: var(--spacing-2);
+
+  ::ng-deep circle {
+    stroke: var(--primary-color);
+  }
+}

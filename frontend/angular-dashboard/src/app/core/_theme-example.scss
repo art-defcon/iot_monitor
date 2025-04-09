@@ -1,0 +1,113 @@
+// Angular Material Theming Example
+// This file demonstrates how to properly use the Angular Material theming system
+
+// Import the theme functions and variables
+@use './theme.scss' as theme;
+@use '@angular/material' as mat;
+@use 'sass:map';
+
+// Example 1: Using the color functions directly
+.example-primary-button {
+  // Using the primary color functions
+  background-color: theme.primary(500);
+  color: theme.primary-contrast(500);
+  
+  &:hover {
+    background-color: theme.primary(700);
+    color: theme.primary-contrast(700);
+  }
+  
+  &:disabled {
+    background-color: theme.primary(100);
+    color: theme.primary-contrast(100);
+  }
+}
+
+// Example 2: Using CSS variables (for backward compatibility)
+.example-accent-button {
+  background-color: var(--accent-color);
+  color: var(--accent-contrast);
+  
+  &:hover {
+    background-color: var(--accent-dark);
+  }
+}
+
+// Example 3: Using Angular Material's theming mixins (recommended for Angular Material components)
+// Note: In a real component, you would import the theme directly and use it
+// This is just an example of the syntax
+.example-mat-button {
+  // @include mat.button-color($theme);
+  background-color: var(--primary-color);
+  color: var(--primary-contrast);
+}
+
+// Example 4: Creating a custom component theme
+@mixin custom-component-theme($theme) {
+  // Extract the color configuration from the theme
+  $color-config: mat.get-color-config($theme);
+  
+  // Extract the palettes from the color configuration
+  $primary-palette: map.get($color-config, 'primary');
+  $accent-palette: map.get($color-config, 'accent');
+  $warn-palette: map.get($color-config, 'warn');
+  $is-dark: map.get($color-config, 'is-dark');
+  
+  .custom-component {
+    // Use the palettes to define the component's colors
+    background-color: mat.get-color-from-palette($primary-palette, 50);
+    border-color: mat.get-color-from-palette($primary-palette, 500);
+    color: mat.get-color-from-palette($primary-palette, 900);
+    
+    .custom-component-header {
+      background-color: mat.get-color-from-palette($primary-palette, 500);
+      color: mat.get-color-from-palette($primary-palette, 500-contrast);
+    }
+    
+    .custom-component-action {
+      background-color: mat.get-color-from-palette($accent-palette, A200);
+      color: mat.get-color-from-palette($accent-palette, A200-contrast);
+      
+      &:hover {
+        background-color: mat.get-color-from-palette($accent-palette, A400);
+        color: mat.get-color-from-palette($accent-palette, A400-contrast);
+      }
+    }
+    
+    .custom-component-error {
+      background-color: mat.get-color-from-palette($warn-palette, 50);
+      border-color: mat.get-color-from-palette($warn-palette, 500);
+      color: mat.get-color-from-palette($warn-palette, 900);
+    }
+  }
+}
+
+// Note: In a real component, you would apply the mixin like this:
+// @include custom-component-theme($your-theme);
+
+// Example 5: Supporting both light and dark themes
+@mixin responsive-theme-component($theme) {
+  $color-config: mat.get-color-config($theme);
+  $primary-palette: map.get($color-config, 'primary');
+  $is-dark: map.get($color-config, 'is-dark');
+  
+  .responsive-component {
+    @if $is-dark {
+      // Dark theme styles
+      background-color: mat.get-color-from-palette($primary-palette, 900);
+      color: mat.get-color-from-palette($primary-palette, 900-contrast);
+    } @else {
+      // Light theme styles
+      background-color: mat.get-color-from-palette($primary-palette, 50);
+      color: mat.get-color-from-palette($primary-palette, 50-contrast);
+    }
+  }
+}
+
+// Note: In a real component, you would apply the mixin like this:
+// @include responsive-theme-component($your-theme);
+// 
+// And for dark theme:
+// @media (prefers-color-scheme: dark) {
+//   @include responsive-theme-component($your-dark-theme);
+// }

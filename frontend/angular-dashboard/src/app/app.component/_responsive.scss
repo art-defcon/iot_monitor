@@ -1,0 +1,19 @@
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .app-content {
+    .content-container {
+      padding: var(--spacing-4) var(--spacing-3);
+
+      .no-gateway-selected {
+        .welcome-card {
+          padding: var(--spacing-4);
+        }
+      }
+
+      .skeleton-container {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-4);
+      }
+    }
+  }
+}

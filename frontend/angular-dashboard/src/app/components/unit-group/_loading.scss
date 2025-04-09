@@ -1,0 +1,32 @@
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  padding: var(--spacing-6);
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  border-left: 6px solid var(--primary-color);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--border-color);
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--primary-light);
+  }
+
+  ::ng-deep mat-progress-bar {
+    border-radius: var(--radius-full);
+    height: 6px;
+    
+    .mdc-linear-progress__buffer-bar {
+      background-color: var(--surface-bg);
+    }
+    
+    .mdc-linear-progress__bar-inner {
+      border-color: var(--primary-color);
+    }
+  }
+}

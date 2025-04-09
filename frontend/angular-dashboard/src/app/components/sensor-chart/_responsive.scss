@@ -1,0 +1,26 @@
+@media (max-width: 768px) {
+  .chart-container {
+    min-height: 260px;
+    padding: var(--spacing-3);
+  }
+
+  .no-data {
+    min-height: 200px;
+    padding: var(--spacing-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    min-height: 220px;
+  }
+
+  .no-data {
+    min-height: 180px;
+    padding: var(--spacing-4);
+
+    &::before {
+      font-size: 32px;
+    }
+  }
+}

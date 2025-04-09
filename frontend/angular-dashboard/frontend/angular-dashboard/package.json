@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "chart.js": "^4.4.8",
+    "ng2-charts": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/chart.js": "^2.9.41"
+  }
+}

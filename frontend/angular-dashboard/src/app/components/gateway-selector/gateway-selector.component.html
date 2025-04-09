@@ -1,0 +1,43 @@
+<div class="gateway-selector-container">
+  <mat-form-field appearance="outline">
+    <mat-label>
+      <mat-icon class="select-icon">router</mat-icon>
+      Select IoT Gateway
+    </mat-label>
+    <mat-select [(value)]="selectedGateway" (selectionChange)="onGatewayChange($event.value)">
+      <mat-option *ngFor="let gateway of gateways" [value]="gateway">
+        <div class="gateway-option">
+          <span class="gateway-name">{{ gateway.name }}</span>
+          <span class="gateway-location">{{ gateway.location }}</span>
+        </div>
+      </mat-option>
+      <mat-option *ngIf="gateways.length === 0 && !isLoading" disabled>
+        <div class="gateway-option">
+          <span class="gateway-name">No gateways available</span>
+          <span class="gateway-location">Please check your connection</span>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="status-info" *ngIf="selectedGateway">
+    <mat-icon class="info-icon">event</mat-icon>
+    <span class="registration-date" data-tooltip="When this gateway was first registered">
+      Registered: {{ selectedGateway.registeredAt | date:'medium' }}
+    </span>
+    <button mat-icon-button (click)="loadGateways()" [disabled]="isLoading" 
+            class="refresh-button tooltip" data-tooltip="Refresh gateway list">
+      <mat-icon>refresh</mat-icon>
+    </button>
+    <button mat-icon-button (click)="deleteGateway()" [disabled]="isLoading" 
+            class="delete-button tooltip" data-tooltip="Delete this gateway">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <mat-progress-spinner 
+    *ngIf="isLoading"
+    diameter="24"
+    mode="indeterminate">
+  </mat-progress-spinner>
+</div>

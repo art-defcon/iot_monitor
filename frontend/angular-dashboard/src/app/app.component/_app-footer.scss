@@ -1,0 +1,18 @@
+.app-footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-4) 0;
+  box-shadow: var(--shadow-sm);
+
+  .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+    text-align: center;
+
+    p {
+      margin: 0;
+      font-size: var(--font-size-sm);
+    }
+  }
+}

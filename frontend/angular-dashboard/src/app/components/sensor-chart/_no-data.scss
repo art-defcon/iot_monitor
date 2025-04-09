@@ -1,0 +1,30 @@
+.no-data {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--surface-bg);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  transition: all var(--transition-normal);
+  opacity: 0.8;
+
+  &::before {
+    content: '📊';
+    font-size: 40px;
+    margin-bottom: var(--spacing-4);
+    opacity: 0.7;
+  }
+
+  &:hover {
+    background: var(--bg-color);
+    border-color: var(--primary-light);
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,19 @@
+<div class="chart-container">
+  <canvas baseChart
+    [data]="chartData"
+    [options]="chartOptions"
+    [type]="chartType">
+  </canvas>
+  
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <div *ngIf="chartData.datasets.length === 0 && !isLoading" class="no-data">
+    No data available for this sensor
+  </div>
+</div>
+
+<div *ngIf="lastUpdated" class="timestamp tooltip" data-tooltip="Last time this chart was updated">
+  Last updated: {{ lastUpdated | date:'medium' }}
+</div>

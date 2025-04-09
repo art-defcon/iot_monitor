@@ -1,0 +1,43 @@
+::ng-deep {
+  .mat-mdc-select-panel {
+    background: var(--card-bg);
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    margin-top: var(--spacing-1);
+
+    .gateway-option {
+      display: flex;
+      flex-direction: column;
+      padding: var(--spacing-2) var(--spacing-3);
+
+      .gateway-name {
+        font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
+      }
+
+      .gateway-location {
+        font-size: var(--font-size-xs);
+        color: var(--text-secondary);
+        margin-top: var(--spacing-1);
+      }
+    }
+
+    .mat-mdc-option {
+      &.mat-mdc-selected {
+        background: rgba(var(--primary-color-rgb), 0.05) !important;
+
+        .gateway-name {
+          color: var(--primary-color);
+        }
+      }
+
+      &:hover {
+        background: rgba(var(--primary-color-rgb), 0.08) !important;
+
+        .gateway-name {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
