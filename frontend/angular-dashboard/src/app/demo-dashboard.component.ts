@@ -113,10 +113,6 @@ interface SensorData {
 
           <div class="dashboard-cards">
             <div *ngFor="let sensor of humiditySensors" class="sensor-card">
-              <div class="sensor-header">
-                <h4>{{ sensor.name }}</h4>
-                <span class="sensor-status status-active"></span>
-              </div>
               
               <app-sensor-chart 
                 [readings]="sensor.readings" 
@@ -148,10 +144,6 @@ interface SensorData {
 
           <div class="dashboard-cards">
             <div *ngFor="let sensor of voltageSensors" class="sensor-card">
-              <div class="sensor-header">
-                <h4>{{ sensor.name }}</h4>
-                <span class="sensor-status status-active"></span>
-              </div>
               
               <app-sensor-chart 
                 [readings]="sensor.readings" 

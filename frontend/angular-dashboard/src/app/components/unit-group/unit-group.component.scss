@@ -1,6 +1,7 @@
 @use 'loading';
 @use 'skeleton';
 @use 'animations';
+@use '@angular/material' as mat;
 
 // Dashboard layout
 .dashboard-groups {
@@ -17,6 +18,42 @@
 
     &:hover {
       box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.42), 0 4px 25px 0 rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    // Success (Temperature)
+    &.card-success {
+      background: rgba(mat.m2-get-color-from-palette(mat.$m2-green-palette, 500), 0.08);
+      .group-header {
+        background: linear-gradient(
+          60deg, 
+          mat.m2-get-color-from-palette(mat.$m2-green-palette, 500),
+          mat.m2-get-color-from-palette(mat.$m2-green-palette, 700)
+        );
+      }
+    }
+    
+    // Info (Humidity)
+    &.card-info {
+      background: rgba(mat.m2-get-color-from-palette(mat.$m2-blue-palette, 500), 0.08);
+      .group-header {
+        background: linear-gradient(
+          60deg,
+          mat.m2-get-color-from-palette(mat.$m2-blue-palette, 500),
+          mat.m2-get-color-from-palette(mat.$m2-blue-palette, 700)
+        );
+      }
+    }
+    
+    // Danger (Voltage)
+    &.card-danger {
+      background: rgba(mat.m2-get-color-from-palette(mat.$m2-red-palette, 500), 0.08);
+      .group-header {
+        background: linear-gradient(
+          60deg,
+          mat.m2-get-color-from-palette(mat.$m2-red-palette, 500),
+          mat.m2-get-color-from-palette(mat.$m2-red-palette, 700)
+        );
+      }
     }
 
     // Color variations for group headers - Material Dashboard style

@@ -46,4 +46,19 @@ $iot-light-theme: mat.m2-define-light-theme((
   --accent-color-rgb: #{color.channel(mat.m2-get-color-from-palette($iot-accent), "red", $space: rgb)}, 
                       #{color.channel(mat.m2-get-color-from-palette($iot-accent), "green", $space: rgb)}, 
                       #{color.channel(mat.m2-get-color-from-palette($iot-accent), "blue", $space: rgb)};
+
+  // Success colors (green palette)
+  --success-color: #{mat.m2-get-color-from-palette(mat.$m2-green-palette, 500)};
+  --success-light: #{mat.m2-get-color-from-palette(mat.$m2-green-palette, 300)};
+  --success-dark: #{mat.m2-get-color-from-palette(mat.$m2-green-palette, 700)};
+  
+  // Info colors (blue palette)
+  --info-color: #{mat.m2-get-color-from-palette(mat.$m2-blue-palette, 500)};
+  --info-light: #{mat.m2-get-color-from-palette(mat.$m2-blue-palette, 300)};
+  --info-dark: #{mat.m2-get-color-from-palette(mat.$m2-blue-palette, 700)};
+  
+  // Danger colors (red palette)
+  --danger-color: #{mat.m2-get-color-from-palette(mat.$m2-red-palette, 500)};
+  --danger-light: #{mat.m2-get-color-from-palette(mat.$m2-red-palette, 300)};
+  --danger-dark: #{mat.m2-get-color-from-palette(mat.$m2-red-palette, 700)};
 }
