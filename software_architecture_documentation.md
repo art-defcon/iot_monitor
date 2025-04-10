@@ -89,6 +89,35 @@ erDiagram
 
 This simplified model focuses on gateways and their readings, eliminating the need to track individual sensor devices. The `sensorLabel` field in the Reading entity preserves the sensor identifier that comes from the gateway, allowing for grouping and visualization of readings by sensor while maintaining a clean, two-entity architecture.
 
+## Test Data Conventions
+
+```mermaid
+graph TD
+    A[Gateway] --> B[Voltage Sensors]
+    A --> C[Temperature Sensors]
+    A --> D[Humidity Sensors]
+    B --> E["battery 1, battery 2, boat battery, solar battery"]
+    C --> F["house, inhouse, outdoor, battery temperature"]
+    D --> G["indoor, shed, outdoor, garden, flower bed"]
+```
+
+**Gateway Naming Examples:**
+- "Summer house", "House 1", "Barn", "Garage", "Workshop"
+
+**Voltage Sensor Labels:**
+- Battery monitoring: "battery 1", "battery 2" 
+- Application-specific: "boat battery", "solar battery"
+
+**Temperature Sensor Labels:**
+- Location-based: "house", "inhouse", "outdoor"
+- Functional: "battery temperature"
+
+**Humidity Sensor Labels:**  
+- Indoor/outdoor: "indoor", "shed", "outdoor"
+- Specialized locations: "garden", "flower bed"
+
+_Note: These conventions are for test/demo data generation. Actual production deployments may use different naming schemes._
+
 ## API Endpoint Design
 
 ### Gateway Endpoints
