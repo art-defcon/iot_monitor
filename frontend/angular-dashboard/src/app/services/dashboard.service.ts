@@ -23,9 +23,26 @@ export class DashboardService {
   private loading$ = new BehaviorSubject<boolean>(false);
   private error$ = new BehaviorSubject<string | null>(null);
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) {
+    // Initialize with empty data
+    this.unitGroups$.next([]);
+  }
 
   startAutoRefresh(gatewayId: string): void {
+    // Check if this is the default gateway ID
+    if (gatewayId === 'default-gateway-id' || gatewayId === '81380b79-d725-4e80-baa7-0fe82cf0993e') {
+      console.log('Using default gateway ID, loading mock data');
+      this.loading$.next(true);
+      
+      // Simulate loading delay
+      setTimeout(() => {
+        // Use the first gateway from mock data
+        this.loadReadings('81380b79-d725-4e80-baa7-0fe82cf0993e');
+      }, 1000);
+      
+      return;
+    }
+    
     // Initial load
     this.loadReadings(gatewayId);
 

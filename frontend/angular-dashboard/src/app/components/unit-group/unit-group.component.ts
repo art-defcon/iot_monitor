@@ -1,28 +1,25 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, TitleCasePipe, DecimalPipe } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable, of } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { SensorChartComponent } from '../sensor-chart/sensor-chart.component';
-import { ApiService } from '../../services/api.service';
+import { DashboardService, UnitGroup } from '../../services/dashboard.service';
 
 interface Sensor {
   id: string;
   name: string;
-  readings: Reading[];
-  lastReading?: Reading;
+  readings: {
+    timestamp: string;
+    value: number;
+  }[];
 }
 
 interface Reading {
-  value: number;
   timestamp: string;
-}
-
-interface UnitGroup {
-  unit: string;
-  sensors: Sensor[];
+  value: number;
 }
 
 @Component({
@@ -37,15 +34,16 @@ interface UnitGroup {
     MatProgressBarModule,
     MatIconModule,
     SensorChartComponent,
-    TitleCasePipe
+    TitleCasePipe,
+    DecimalPipe
   ]
 })
-export class UnitGroupComponent implements OnInit {
+export class UnitGroupComponent implements OnInit, OnDestroy {
   @Input() gatewayId!: string;
   
-  isLoading$: Observable<boolean> = of(false);
-  error$: Observable<string | null> = of(null);
-  unitGroups$: Observable<UnitGroup[]> = of([]);
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  unitGroups$: Observable<UnitGroup[]>;
   
   // Skeleton data for placeholder UI
   skeletonGroups: UnitGroup[] = [
@@ -68,65 +66,172 @@ export class UnitGroupComponent implements OnInit {
       ]
     }
   ];
+  
+  private subscription: Subscription | null = null;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private dashboardService: DashboardService) {
+    // Initialize mock data for skeleton UI
+    this.initializeSkeletonGroups();
+    this.isLoading$ = this.dashboardService.isLoading();
+    this.error$ = this.dashboardService.getError();
+    this.unitGroups$ = this.dashboardService.getUnitGroups();
+  }
 
   ngOnInit(): void {
-    // In a real implementation, this would fetch data from the API
-    this.isLoading$ = of(false);
-    this.error$ = of(null);
-    
     // Check if we have a valid gatewayId
     if (this.gatewayId) {
-      // Fetch real data from API
-      this.fetchSensorData();
+      // Start auto-refresh of data
+      this.dashboardService.startAutoRefresh(this.gatewayId);
     } else {
-      // Use placeholder data
-      this.unitGroups$ = of([]);
+      // If no gateway ID is provided, we'll use mock data
+      console.log('No gateway ID provided, using mock data');
     }
   }
 
   /**
-   * Fetch sensor data from the API
+   * Initialize skeleton groups with mock data structure
    */
-  private fetchSensorData(): void {
-    // In a real implementation, this would make an API call
-    // For now, we'll just use the mock data
-    const end = new Date().toISOString();
-    const start = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    
-    // Example of how to fetch data from API
-    // this.apiService.get<any[]>(`/readings/${this.gatewayId}?start=${start}&end=${end}`)
-    //   .subscribe({
-    //     next: (data) => {
-    //       // Transform data into unit groups
-    //       const unitGroups = this.transformToUnitGroups(data);
-    //       this.unitGroups$ = of(unitGroups);
-    //       this.isLoading$ = of(false);
-    //     },
-    //     error: (err) => {
-    //       this.error$ = of(err.message || 'Failed to load sensor data');
-    //       this.isLoading$ = of(false);
-    //     }
-    //   });
-    
-    // For now, we'll just use mock data
-    this.unitGroups$ = of([
+  private initializeSkeletonGroups(): void {
+    // Add more variety to the skeleton groups
+    this.skeletonGroups = [
+      {
+        unit: 'celsius',
+        sensors: [
+          { id: 'temp-1', name: 'Temperature Sensor 1', readings: [] },
+          { id: 'temp-2', name: 'Temperature Sensor 2', readings: [] },
+          { id: 'temp-3', name: 'Temperature Sensor 3', readings: [] }
+        ]
+      },
+      {
+        unit: 'percent',
+        sensors: [
+          { id: 'hum-1', name: 'Humidity Sensor 1', readings: [] },
+          { id: 'hum-2', name: 'Humidity Sensor 2', readings: [] },
+          { id: 'hum-3', name: 'Humidity Sensor 3', readings: [] }
+        ]
+      },
       {
         unit: 'volts',
         sensors: [
-          {
-            id: 'voltage-1',
-            name: 'Voltage Sensor',
-            readings: [
-              { value: 11.01, timestamp: new Date(Date.now() - 600000).toISOString() },
-              { value: 13.06, timestamp: new Date(Date.now() - 300000).toISOString() },
-              { value: 13.1, timestamp: new Date().toISOString() }
-            ]
-          }
+          { id: 'volt-1', name: 'Battery Monitor 1', readings: [] },
+          { id: 'volt-2', name: 'Power Supply', readings: [] },
+          { id: 'volt-3', name: 'Solar Panel Output', readings: [] }
         ]
       }
-    ]);
+    ];
+  }
+  
+  ngOnDestroy(): void {
+    // Clean up subscription when component is destroyed
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Generate mock readings for a sensor
+   */
+  generateMockReadings(sensorId: string, count: number = 24): Reading[] {
+    const readings: Reading[] = [];
+    const now = new Date();
+    const seed = sensorId.charCodeAt(0) + sensorId.charCodeAt(sensorId.length - 1);
+    
+    for (let i = 0; i < count; i++) {
+      const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // hourly data
+      
+      // Create a somewhat realistic pattern with some randomness
+      // Use sine wave with different frequencies for different sensors
+      const timeComponent = Math.sin((i + seed) * 0.2) * 5;
+      const randomComponent = (Math.random() - 0.5) * 2;
+      
+      // Base value depends on sensor type
+      let baseValue = 20; // default
+      if (sensorId.startsWith('temp')) {
+        baseValue = 22 + (seed % 3); // temperature around 22-25°C
+      } else if (sensorId.startsWith('hum')) {
+        baseValue = 45 + (seed % 10); // humidity around 45-55%
+      } else if (sensorId.startsWith('volt')) {
+        baseValue = 11.5 + (seed % 2); // voltage around 11.5-13.5V
+      }
+      
+      const value = baseValue + timeComponent + randomComponent;
+      
+      readings.push({
+        timestamp: timestamp.toISOString(),
+        value: parseFloat(value.toFixed(2))
+      });
+    }
+    
+    return readings;
+  }
+
+  /**
+   * Get mock statistic values based on unit type
+   */
+  getMockStatValue(unit: string, type: 'avg' | 'min' | 'max'): string {
+    const unitSymbol = this.getUnitSymbol(unit);
+    
+    if (unit === 'celsius') {
+      if (type === 'avg') return `22.5${unitSymbol}`;
+      if (type === 'min') return `18.2${unitSymbol}`;
+      if (type === 'max') return `26.8${unitSymbol}`;
+    } else if (unit === 'percent') {
+      if (type === 'avg') return `48.3${unitSymbol}`;
+      if (type === 'min') return `42.1${unitSymbol}`;
+      if (type === 'max') return `56.7${unitSymbol}`;
+    } else if (unit === 'volts') {
+      if (type === 'avg') return `12.2${unitSymbol}`;
+      if (type === 'min') return `11.8${unitSymbol}`;
+      if (type === 'max') return `12.9${unitSymbol}`;
+    }
+    
+    return `--${unitSymbol}`;
+  }
+
+  /**
+   * Get unit symbol for display
+   */
+  getUnitSymbol(unit: string): string {
+    const symbols: { [key: string]: string } = {
+      'celsius': '°C',
+      'fahrenheit': '°F',
+      'percent': '%',
+      'ppm': ' ppm',
+      'lux': ' lx',
+      'meters': 'm',
+      'hpa': ' hPa',
+      'volts': 'V',
+      'amps': 'A',
+      'watts': 'W',
+      'decibels': ' dB'
+    };
+    
+    return symbols[unit.toLowerCase()] || '';
+  }
+
+  /**
+   * Calculate average reading value
+   */
+  getAverageReading(readings: Reading[]): number {
+    if (!readings || readings.length === 0) return 0;
+    const sum = readings.reduce((total, reading) => total + reading.value, 0);
+    return sum / readings.length;
+  }
+
+  /**
+   * Get minimum reading value
+   */
+  getMinReading(readings: Reading[]): number {
+    if (!readings || readings.length === 0) return 0;
+    return Math.min(...readings.map(r => r.value));
+  }
+
+  /**
+   * Get maximum reading value
+   */
+  getMaxReading(readings: Reading[]): number {
+    if (!readings || readings.length === 0) return 0;
+    return Math.max(...readings.map(r => r.value));
   }
 
   /**
@@ -204,5 +309,44 @@ export class UnitGroupComponent implements OnInit {
     else {
       return 'status-inactive';
     }
+  }
+
+  /**
+   * Get color class for group card based on unit type
+   */
+  getGroupColorClass(unit: string): string {
+    const colorMap: { [key: string]: string } = {
+      'celsius': 'card-success',
+      'fahrenheit': 'card-success',
+      'percent': 'card-info',
+      'ppm': 'card-info',
+      'lux': 'card-warning',
+      'meters': 'card-primary',
+      'hpa': 'card-primary',
+      'volts': 'card-danger',
+      'amps': 'card-danger',
+      'watts': 'card-danger',
+      'decibels': 'card-warning'
+    };
+    
+    return colorMap[unit.toLowerCase()] || 'card-primary';
+  }
+
+  /**
+   * Map unit type to sensor chart component's sensorType
+   */
+  getSensorTypeForChart(unit: string): 'temperature' | 'voltage' | 'humidity' | 'celsius' | 'volts' | 'percent' {
+    const typeMap: { [key: string]: 'temperature' | 'voltage' | 'humidity' | 'celsius' | 'volts' | 'percent' } = {
+      'celsius': 'celsius',
+      'fahrenheit': 'temperature',
+      'percent': 'percent',
+      'humidity': 'humidity',
+      'volts': 'volts',
+      'voltage': 'voltage',
+      'amps': 'voltage',
+      'watts': 'voltage'
+    };
+    
+    return typeMap[unit.toLowerCase()] || 'temperature';
   }
 }

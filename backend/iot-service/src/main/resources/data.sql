@@ -1,10 +1,10 @@
 -- Gateways
-INSERT INTO gateway (gateway_id, name, location, model, status, registered_at) VALUES
+INSERT INTO gateways (gateway_id, name, location, model, status, registered_at) VALUES
 ('a6b3c2d1-e8f3-4a7c-b229-1f25b9c8d47a', 'Summer House', '59.329323, 18.068581', 'GW-2000', 'ACTIVE', '2025-04-01 08:00:00'),
 ('b7c4d5e6-f8g9-4h0i-j1k2-l3m4n5o6p7q8', 'Barn', '59.328714, 18.072196', 'GW-2000', 'ACTIVE', '2025-04-01 08:15:00');
 
 -- Summer House Sensors
-INSERT INTO reading (reading_id, gateway_id, timestamp, sensor_label, unit, reading_value) VALUES
+INSERT INTO readings (reading_id, gateway_id, timestamp, sensor_label, unit, reading_value) VALUES
 -- Battery 1 Voltage (12.6V ±0.5V)
 (uuid_generate_v4(), 'a6b3c2d1-e8f3-4a7c-b229-1f25b9c8d47a', '2025-04-01 08:00:00', 'battery 1', 'volt', 12.4),
 (uuid_generate_v4(), 'a6b3c2d1-e8f3-4a7c-b229-1f25b9c8d47a', '2025-04-01 08:15:00', 'battery 1', 'volt', 12.7),
@@ -25,7 +25,7 @@ INSERT INTO reading (reading_id, gateway_id, timestamp, sensor_label, unit, read
 (uuid_generate_v4(), 'a6b3c2d1-e8f3-4a7c-b229-1f25b9c8d47a', '2025-04-01 08:15:00', 'shed', 'percent', 53);
 
 -- Barn Sensors
-INSERT INTO reading (reading_id, gateway_id, timestamp, sensor_label, unit, reading_value) VALUES
+INSERT INTO readings (reading_id, gateway_id, timestamp, sensor_label, unit, reading_value) VALUES
 -- Boat Battery Voltage
 (uuid_generate_v4(), 'b7c4d5e6-f8g9-4h0i-j1k2-l3m4n5o6p7q8', '2025-04-01 08:00:00', 'boat battery', 'volt', 12.3),
 (uuid_generate_v4(), 'b7c4d5e6-f8g9-4h0i-j1k2-l3m4n5o6p7q8', '2025-04-01 08:15:00', 'boat battery', 'volt', 12.6),

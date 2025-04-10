@@ -1,11 +1,19 @@
 <div class="app-container">
-  <header role="banner">
+  <header role="banner" class="dashboard-header">
     <div class="header-content">
-      <h1>IoT Monitor</h1>
+      <div class="logo-container">
+        <mat-icon class="logo-icon">sensors</mat-icon>
+        <h1>IoT Monitor</h1>
+      </div>
       <div class="header-actions">
-        <button mat-icon-button aria-label="Settings">
-          <mat-icon>settings</mat-icon>
-        </button>
+        <div class="data-source-toggle">
+          <span class="toggle-label">Using {{ apiService.isUsingMockData() ? 'Mock' : 'Live' }} Data</span>
+          <mat-slide-toggle 
+            [checked]="apiService.isUsingMockData()" 
+            (change)="toggleDataSource($event.checked)"
+            color="primary">
+          </mat-slide-toggle>
+        </div>
       </div>
     </div>
   </header>
@@ -17,24 +25,77 @@
       </div>
 
       <div class="content-area">
-        <ng-container *ngIf="selectedGateway; else noGateway">
-          <div *ngIf="isLoading" class="loading-container">
-            <div class="loading-content">
-              <div class="skeleton-header"></div>
-              <div class="skeleton-chart"></div>
+        <!-- Dashboard summary cards -->
+        <div class="dashboard-summary">
+          <div class="summary-card summary-card-primary">
+            <div class="summary-icon">
+              <mat-icon>sensors</mat-icon>
+            </div>
+            <div class="summary-details">
+              <h4>Total Sensors</h4>
+              <div class="summary-value">{{ selectedGateway ? '12' : '—' }}</div>
             </div>
           </div>
-
-          <!-- Actual content -->
-          <app-unit-group *ngIf="!isLoading" [gatewayId]="selectedGateway.id"></app-unit-group>
-        </ng-container>
-        
-        <ng-template #noGateway>
-          <div class="no-gateway-selected" role="alert">
-            <p>Please select a gateway from the sidebar</p>
+          
+          <div class="summary-card summary-card-success">
+            <div class="summary-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="summary-details">
+              <h4>Active Sensors</h4>
+              <div class="summary-value">{{ selectedGateway ? '10' : '—' }}</div>
+            </div>
           </div>
-        </ng-template>
+          
+          <div class="summary-card summary-card-warning">
+            <div class="summary-icon">
+              <mat-icon>warning</mat-icon>
+            </div>
+            <div class="summary-details">
+              <h4>Warnings</h4>
+              <div class="summary-value">{{ selectedGateway ? '2' : '—' }}</div>
+            </div>
+          </div>
+          
+          <div class="summary-card summary-card-danger">
+            <div class="summary-icon">
+              <mat-icon>error</mat-icon>
+            </div>
+            <div class="summary-details">
+              <h4>Alerts</h4>
+              <div class="summary-value">{{ selectedGateway ? '0' : '—' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main dashboard content -->
+        <div *ngIf="isLoading" class="loading-container">
+          <div class="loading-content">
+            <div class="skeleton-header"></div>
+            <div class="skeleton-charts">
+              <div class="skeleton-chart" *ngFor="let i of [1,2,3,4,5,6]"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actual content -->
+        <app-unit-group *ngIf="!isLoading" [gatewayId]="selectedGateway?.id || defaultGatewayId"></app-unit-group>
       </div>
     </div>
   </main>
+
+  <footer class="dashboard-footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <span>IoT Monitor Dashboard</span>
+        <span class="separator">|</span>
+        <span>Last updated: {{ lastUpdated | date:'medium' }}</span>
+      </div>
+      <div class="footer-actions">
+        <button mat-button color="primary" (click)="refreshData()">
+          <mat-icon>refresh</mat-icon> Refresh Data
+        </button>
+      </div>
+    </div>
+  </footer>
 </div>

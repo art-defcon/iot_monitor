@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class SensorChartComponent implements OnChanges, AfterViewInit {
   @Input() readings: any[] = []; 
-  @Input() sensorType: 'temperature' | 'voltage' | 'humidity' = 'temperature';
+  @Input() sensorType: 'temperature' | 'voltage' | 'humidity' | 'celsius' | 'volts' | 'percent' = 'temperature';
   
   chartData: ChartData = { 
     datasets: [],
@@ -26,47 +26,99 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
       y: {
         beginAtZero: false,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
+          color: 'rgba(0, 0, 0, 0.04)',
+          lineWidth: 0.5
         },
-        ticks: {
-          font: {
-            family: 'Inter, sans-serif',
-            size: 10
-          },
-          color: '#64748b', // text-secondary
-          padding: 8
-        }
-      },
-      x: {
-        grid: {
+        border: {
           display: false
         },
         ticks: {
           font: {
             family: 'Inter, sans-serif',
-            size: 10
+            size: 8
           },
-          color: '#64748b', // text-secondary
-          padding: 8,
-          maxTicksLimit: 6
-        }
+          color: '#94a3b8', // lighter text color
+          padding: 4,
+          maxTicksLimit: 4
+        },
+      },
+      x: {
+        grid: {
+          display: false
+        },
+        border: {
+          display: false
+        },
+        ticks: {
+          font: {
+            family: 'Inter, sans-serif',
+            size: 8
+          },
+          color: '#94a3b8', // lighter text color
+          padding: 4,
+          maxTicksLimit: 3
+        },
       }
     },
     elements: {
       line: {
-        tension: 0.3, // Slightly curved lines
+        tension: 0.4, // More curved lines
         borderWidth: 2,
         fill: 'start',
-        backgroundColor: 'rgba(58, 134, 255, 0.1)', // primary-color with opacity
-        borderColor: '#3a86ff', // primary-color
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 160);
+          
+          // Different colors based on sensor type
+          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
+            gradient.addColorStop(0, 'rgba(76, 175, 80, 0.3)');
+            gradient.addColorStop(1, 'rgba(76, 175, 80, 0)');
+            return gradient;
+          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
+            gradient.addColorStop(0, 'rgba(3, 169, 244, 0.3)');
+            gradient.addColorStop(1, 'rgba(3, 169, 244, 0)');
+            return gradient;
+          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
+            gradient.addColorStop(0, 'rgba(244, 67, 54, 0.3)');
+            gradient.addColorStop(1, 'rgba(244, 67, 54, 0)');
+            return gradient;
+          } else {
+            gradient.addColorStop(0, 'rgba(58, 134, 255, 0.3)');
+            gradient.addColorStop(1, 'rgba(58, 134, 255, 0)');
+            return gradient;
+          }
+        },
+        borderColor: (context) => {
+          // Different colors based on sensor type
+          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
+            return '#4caf50'; // success-color
+          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
+            return '#03a9f4'; // info-color
+          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
+            return '#f44336'; // danger-color
+          } else {
+            return '#3a86ff'; // primary-color
+          }
+        }
       },
       point: {
-        radius: 3,
-        hoverRadius: 5,
+        radius: 0, // Hide points by default for cleaner look
+        hoverRadius: 4,
         backgroundColor: '#ffffff',
         borderWidth: 2,
-        borderColor: '#3a86ff', // primary-color
-        hitRadius: 10
+        borderColor: (context) => {
+          // Different colors based on sensor type
+          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
+            return '#4caf50'; // success-color
+          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
+            return '#03a9f4'; // info-color
+          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
+            return '#f44336'; // danger-color
+          } else {
+            return '#3a86ff'; // primary-color
+          }
+        },
+        hitRadius: 8
       }
     },
     plugins: {
@@ -80,18 +132,18 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
         bodyColor: '#64748b', // text-secondary
         titleFont: {
           family: 'Inter, sans-serif',
-          size: 12,
+          size: 10,
           weight: 'bold'
         },
         bodyFont: {
           family: 'Inter, sans-serif',
-          size: 12
+          size: 10
         },
-        padding: 12,
+        padding: 8,
         borderColor: '#e2e8f0', // border-color
         borderWidth: 1,
         cornerRadius: 6,
-        boxPadding: 4,
+        boxPadding: 3,
         usePointStyle: true,
         callbacks: {
           title: (tooltipItems) => {
@@ -101,10 +153,13 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
             const value = context.parsed.y;
             switch (this.sensorType) {
               case 'temperature':
+              case 'celsius':
                 return `Temperature: ${value.toFixed(1)}°C`;
               case 'voltage':
+              case 'volts':
                 return `Voltage: ${value.toFixed(1)}V`;
               case 'humidity':
+              case 'percent':
                 return `Humidity: ${value.toFixed(1)}%`;
               default:
                 return `Value: ${value.toFixed(1)}`;
@@ -114,11 +169,19 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
       }
     },
     animation: {
-      duration: 750
+      duration: 500
     },
     hover: {
       mode: 'nearest',
       intersect: false
+    },
+    layout: {
+      padding: {
+        left: 2,
+        right: 2,
+        top: 5,
+        bottom: 0
+      }
     }
   };
   chartType: ChartType = 'line';
@@ -170,31 +233,33 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
     
     const values = sortedReadings.map(r => r.value);
     
-    // Create gradient
-    const canvas = this.elementRef.nativeElement.querySelector('canvas');
-    let gradient;
+    // Determine colors based on sensor type
+    let borderColor = '#3a86ff'; // Default blue
+    let backgroundColor = 'rgba(58, 134, 255, 0.1)';
     
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(58, 134, 255, 0.2)');
-        gradient.addColorStop(1, 'rgba(58, 134, 255, 0)');
-      }
+    if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
+      borderColor = '#4caf50'; // Green
+      backgroundColor = 'rgba(76, 175, 80, 0.1)';
+    } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
+      borderColor = '#03a9f4'; // Light blue
+      backgroundColor = 'rgba(3, 169, 244, 0.1)';
+    } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
+      borderColor = '#f44336'; // Red
+      backgroundColor = 'rgba(244, 67, 54, 0.1)';
     }
     
-    // Update chart data
+    // Update chart data with simpler configuration
     this.chartData = {
       labels: timestamps,
       datasets: [
         {
           data: values,
           label: this.getLabelForSensorType(),
-          borderColor: '#3a86ff',
-          backgroundColor: gradient || 'rgba(58, 134, 255, 0.1)',
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
           pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#3a86ff',
-          pointHoverBackgroundColor: '#3a86ff',
+          pointBorderColor: borderColor,
+          pointHoverBackgroundColor: borderColor,
           pointHoverBorderColor: '#ffffff',
           fill: true
         }
