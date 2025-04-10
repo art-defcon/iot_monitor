@@ -1,11 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { SensorChartComponent } from './components/sensor-chart/sensor-chart.component';
+import { MockDataService } from './services/mock-data.service';
+import { Gateway } from './models/gateway.model';
+import { GatewayReading } from './services/api.service';
 
 interface Reading {
   timestamp: string;
   value: number;
+}
+
+interface SensorData {
+  name: string;
+  readings: Reading[];
 }
 
 @Component({
@@ -397,71 +405,50 @@ interface Reading {
     }
   `]
 })
-export class DemoDashboardComponent {
-  temperatureSensors = [
-    {
-      name: 'Temperature Sensor 1',
-      readings: this.generateMockReadings(22, 3, 24)
-    },
-    {
-      name: 'Temperature Sensor 2',
-      readings: this.generateMockReadings(23, 2, 24)
-    },
-    {
-      name: 'Temperature Sensor 3',
-      readings: this.generateMockReadings(21, 4, 24)
-    }
-  ];
-  
-  humiditySensors = [
-    {
-      name: 'Humidity Sensor 1',
-      readings: this.generateMockReadings(45, 10, 24)
-    },
-    {
-      name: 'Humidity Sensor 2',
-      readings: this.generateMockReadings(50, 8, 24)
-    },
-    {
-      name: 'Humidity Sensor 3',
-      readings: this.generateMockReadings(48, 12, 24)
-    }
-  ];
-  
-  voltageSensors = [
-    {
-      name: 'Battery Monitor 1',
-      readings: this.generateMockReadings(12, 0.5, 24)
-    },
-    {
-      name: 'Power Supply',
-      readings: this.generateMockReadings(11.5, 0.3, 24)
-    },
-    {
-      name: 'Solar Panel Output',
-      readings: this.generateMockReadings(13, 1, 24)
-    }
-  ];
-  
-  generateMockReadings(baseValue: number, fluctuation: number, count: number): Reading[] {
-    const readings: Reading[] = [];
-    const now = new Date();
-    
-    for (let i = 0; i < count; i++) {
-      const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // hourly data
-      
-      // Create a somewhat realistic pattern with some randomness
-      const timeComponent = Math.sin(i * 0.2) * fluctuation;
-      const randomComponent = (Math.random() - 0.5) * fluctuation * 0.5;
-      const value = baseValue + timeComponent + randomComponent;
-      
-      readings.push({
-        timestamp: timestamp.toISOString(),
-        value: parseFloat(value.toFixed(2))
+export class DemoDashboardComponent implements OnInit {
+  temperatureSensors: SensorData[] = [];
+  humiditySensors: SensorData[] = [];
+  voltageSensors: SensorData[] = [];
+
+  constructor(private mockDataService: MockDataService) {}
+
+  ngOnInit(): void {
+    // Get mock data for all gateways
+    this.mockDataService.getGateways().subscribe(gateways => {
+      gateways.forEach(gateway => {
+        this.mockDataService.getReadings(gateway.id, '', '').subscribe(readings => {
+          // Group readings by sensor type
+          const tempReadings = readings.filter(r => r.unit === 'celsius');
+          const humidityReadings = readings.filter(r => r.unit === 'percent');
+          const voltageReadings = readings.filter(r => r.unit === 'volts');
+
+          // Map to sensor-chart compatible format
+          this.temperatureSensors = this.groupAndMapReadings(tempReadings);
+          this.humiditySensors = this.groupAndMapReadings(humidityReadings);
+          this.voltageSensors = this.groupAndMapReadings(voltageReadings);
+        });
       });
-    }
-    
-    return readings.reverse(); // Reverse to get chronological order
+    });
+  }
+
+  private groupAndMapReadings(readings: GatewayReading[]): SensorData[] {
+    // Group by sensor label
+    const groups = new Map<string, any[]>();
+    readings.forEach(reading => {
+      if (!groups.has(reading.sensorLabel)) {
+        groups.set(reading.sensorLabel, []);
+      }
+      groups.get(reading.sensorLabel)?.push(reading);
+    });
+
+    // Convert to sensor-chart format
+    return Array.from(groups.entries()).map(([name, sensorReadings]) => ({
+      name,
+      readings: sensorReadings.map(r => ({
+        timestamp: r.timestamp,
+        value: r.readingValue
+      }))
+    }));
   }
   
   getAverage(readings: Reading[]): number {
