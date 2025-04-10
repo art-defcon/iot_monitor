@@ -26,39 +26,17 @@
           <span class="mock-data-badge">Mock Data</span>
         </div>
       </div>
-      
+
       <div class="group-description">
         <p>{{ getUnitDescription(group.unit) }}</p>
       </div>
 
       <div class="dashboard-cards">
-        <div *ngFor="let sensor of group.sensors" class="sensor-card">
-          <div class="sensor-header">
-            <h4>{{ sensor.name }}</h4>
-            <span class="sensor-status status-active"></span>
-          </div>
-          
-          <!-- Generate mock chart data -->
-          <app-sensor-chart 
-            [readings]="generateMockReadings(sensor.id, 24)" 
-            [sensorType]="getSensorTypeForChart(group.unit)">
-          </app-sensor-chart>
-          
-          <div class="sensor-stats">
-            <div class="stat">
-              <span class="stat-label">Avg</span>
-              <span class="stat-value">{{ getMockStatValue(group.unit, 'avg') }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Min</span>
-              <span class="stat-value">{{ getMockStatValue(group.unit, 'min') }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Max</span>
-              <span class="stat-value">{{ getMockStatValue(group.unit, 'max') }}</span>
-            </div>
-          </div>
-        </div>
+        <app-sensor-chart *ngFor="let sensor of group.sensors"
+          [readings]="generateMockReadings(sensor.id, 24)"
+          [sensorType]="getSensorTypeForChart(group.unit)"
+          [sensorName]="sensor.name">
+        </app-sensor-chart>
       </div>
     </div>
   </div>
@@ -77,38 +55,17 @@
           <span>{{ group.sensors.length }} sensors</span>
         </div>
       </div>
-      
+
       <div class="group-description">
         <p>{{ getUnitDescription(group.unit) }}</p>
       </div>
 
       <div class="dashboard-cards">
-        <div *ngFor="let sensor of group.sensors" class="sensor-card">
-          <div class="sensor-header">
-            <h4>{{ sensor.name }}</h4>
-            <span class="sensor-status" [ngClass]="getSensorStatusClass(sensor)"></span>
-          </div>
-          
-          <app-sensor-chart 
-            [readings]="sensor.readings" 
-            [sensorType]="getSensorTypeForChart(group.unit)">
-          </app-sensor-chart>
-          
-          <div class="sensor-stats" *ngIf="sensor.readings && sensor.readings.length > 0">
-            <div class="stat">
-              <span class="stat-label">Avg</span>
-              <span class="stat-value">{{ getAverageReading(sensor.readings) | number:'1.1-1' }}{{ getUnitSymbol(group.unit) }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Min</span>
-              <span class="stat-value">{{ getMinReading(sensor.readings) | number:'1.1-1' }}{{ getUnitSymbol(group.unit) }}</span>
-            </div>
-            <div class="stat">
-              <span class="stat-label">Max</span>
-              <span class="stat-value">{{ getMaxReading(sensor.readings) | number:'1.1-1' }}{{ getUnitSymbol(group.unit) }}</span>
-            </div>
-          </div>
-        </div>
+        <app-sensor-chart *ngFor="let sensor of group.sensors"
+          [readings]="sensor.readings"
+          [sensorType]="getSensorTypeForChart(group.unit)"
+          [sensorName]="sensor.name">
+        </app-sensor-chart>
       </div>
     </div>
   </div>

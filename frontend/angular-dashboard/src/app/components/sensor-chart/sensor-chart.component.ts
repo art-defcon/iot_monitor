@@ -1,24 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, AfterViewInit, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sensor-chart',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, MatProgressSpinnerModule],
+  imports: [CommonModule, BaseChartDirective, MatProgressSpinnerModule, MatIconModule],
   templateUrl: './sensor-chart.component.html',
-  styleUrls: ['./sensor-chart.component.scss']
+  styleUrls: ['./sensor-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SensorChartComponent implements OnChanges, AfterViewInit {
-  @Input() readings: any[] = []; 
+  @Input() readings: any[] = [];
   @Input() sensorType: 'temperature' | 'voltage' | 'humidity' | 'celsius' | 'volts' | 'percent' = 'temperature';
-  
-  chartData: ChartData = { 
+  @Input() sensorName: string = 'Sensor';
+
+  chartData: ChartData = {
     datasets: [],
     labels: []
   };
+  
   chartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
@@ -26,7 +30,7 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
       y: {
         beginAtZero: false,
         grid: {
-          color: 'rgba(0, 0, 0, 0.04)',
+          color: 'rgba(255, 255, 255, 0.1)', // Subtle white grid lines
           lineWidth: 0.5
         },
         border: {
@@ -34,91 +38,46 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
         },
         ticks: {
           font: {
-            family: 'Inter, sans-serif',
-            size: 8
+            family: 'Roboto, "Helvetica Neue", sans-serif',
+            size: 9
           },
-          color: '#94a3b8', // lighter text color
-          padding: 4,
-          maxTicksLimit: 4
+          color: 'rgba(255, 255, 255, 0.8)', // Brighter white ticks
+          padding: 5,
+          maxTicksLimit: 5
         },
       },
       x: {
         grid: {
-          display: false
+          display: false // Hide x-axis grid lines for cleaner look
         },
         border: {
           display: false
         },
         ticks: {
           font: {
-            family: 'Inter, sans-serif',
-            size: 8
+            family: 'Roboto, "Helvetica Neue", sans-serif',
+            size: 9
           },
-          color: '#94a3b8', // lighter text color
-          padding: 4,
-          maxTicksLimit: 3
+          color: 'rgba(255, 255, 255, 0.8)', // Brighter white ticks
+          padding: 5,
+          maxTicksLimit: 4
         },
       }
     },
     elements: {
       line: {
-        tension: 0.4, // More curved lines
-        borderWidth: 2,
-        fill: 'start',
-        backgroundColor: (context) => {
-          const ctx = context.chart.ctx;
-          const gradient = ctx.createLinearGradient(0, 0, 0, 160);
-          
-          // Different colors based on sensor type
-          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
-            gradient.addColorStop(0, 'rgba(76, 175, 80, 0.3)');
-            gradient.addColorStop(1, 'rgba(76, 175, 80, 0)');
-            return gradient;
-          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
-            gradient.addColorStop(0, 'rgba(3, 169, 244, 0.3)');
-            gradient.addColorStop(1, 'rgba(3, 169, 244, 0)');
-            return gradient;
-          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
-            gradient.addColorStop(0, 'rgba(244, 67, 54, 0.3)');
-            gradient.addColorStop(1, 'rgba(244, 67, 54, 0)');
-            return gradient;
-          } else {
-            gradient.addColorStop(0, 'rgba(58, 134, 255, 0.3)');
-            gradient.addColorStop(1, 'rgba(58, 134, 255, 0)');
-            return gradient;
-          }
-        },
-        borderColor: (context) => {
-          // Different colors based on sensor type
-          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
-            return '#4caf50'; // success-color
-          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
-            return '#03a9f4'; // info-color
-          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
-            return '#f44336'; // danger-color
-          } else {
-            return '#3a86ff'; // primary-color
-          }
-        }
+        tension: 0.4, // Smooth curves
+        borderWidth: 3, // Slightly thicker line
+        fill: false,
+        borderColor: '#FFFFFF' // White line color
       },
       point: {
-        radius: 0, // Hide points by default for cleaner look
+        radius: 0, // Hide points by default
         hoverRadius: 4,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#FFFFFF',
         borderWidth: 2,
-        borderColor: (context) => {
-          // Different colors based on sensor type
-          if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
-            return '#4caf50'; // success-color
-          } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
-            return '#03a9f4'; // info-color
-          } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
-            return '#f44336'; // danger-color
-          } else {
-            return '#3a86ff'; // primary-color
-          }
-        },
-        hitRadius: 8
+        borderColor: '#FFFFFF',
+        hitRadius: 10
       }
     },
     plugins: {
@@ -127,164 +86,229 @@ export class SensorChartComponent implements OnChanges, AfterViewInit {
       },
       tooltip: {
         enabled: true,
-        backgroundColor: '#ffffff',
-        titleColor: '#1e293b', // text-primary
-        bodyColor: '#64748b', // text-secondary
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        titleColor: '#FFFFFF',
+        bodyColor: '#FFFFFF',
         titleFont: {
-          family: 'Inter, sans-serif',
-          size: 10,
+          family: 'Roboto, "Helvetica Neue", sans-serif',
+          size: 12,
           weight: 'bold'
         },
         bodyFont: {
-          family: 'Inter, sans-serif',
-          size: 10
+          family: 'Roboto, "Helvetica Neue", sans-serif',
+          size: 11
         },
-        padding: 8,
-        borderColor: '#e2e8f0', // border-color
-        borderWidth: 1,
-        cornerRadius: 6,
-        boxPadding: 3,
-        usePointStyle: true,
+        padding: 10,
+        cornerRadius: 4,
+        displayColors: false,
         callbacks: {
           title: (tooltipItems) => {
             return `${tooltipItems[0].label}`;
           },
           label: (context) => {
             const value = context.parsed.y;
-            switch (this.sensorType) {
-              case 'temperature':
-              case 'celsius':
-                return `Temperature: ${value.toFixed(1)}°C`;
-              case 'voltage':
-              case 'volts':
-                return `Voltage: ${value.toFixed(1)}V`;
-              case 'humidity':
-              case 'percent':
-                return `Humidity: ${value.toFixed(1)}%`;
-              default:
-                return `Value: ${value.toFixed(1)}`;
-            }
+            return `${this.sensorName}: ${value.toFixed(1)}${this.getUnitSymbol()}`;
           }
         }
       }
     },
     animation: {
-      duration: 500
+      duration: 300
     },
     hover: {
       mode: 'nearest',
-      intersect: false
+      intersect: true
     },
     layout: {
       padding: {
-        left: 2,
-        right: 2,
-        top: 5,
+        left: 5,
+        right: 5,
+        top: 10,
         bottom: 0
       }
     }
   };
+  
   chartType: ChartType = 'line';
   lastUpdated: string | null = null;
   isLoading: boolean = true;
+  currentValue: number | null = null;
+  trendDirection: 'up' | 'down' | 'none' = 'none';
+  previousValue: number | null = null;
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
-    // Apply CSS variables to chart
-    if (this.chartOptions && this.chartOptions.elements && this.chartOptions.elements.line) {
-      this.chartOptions.elements.line.borderColor = 'var(--primary-color)';
-      this.chartOptions.elements.line.backgroundColor = 'rgba(var(--primary-color-rgb), 0.1)';
-      
-      if (this.chartOptions.elements.point) {
-        this.chartOptions.elements.point.borderColor = 'var(--primary-color)';
-      }
-    }
+    // No additional initialization needed
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['readings'] || changes['sensorType']) {
       this.processReadings();
     }
+    if (changes['sensorName']) {
+      this.cdr.markForCheck();
+    }
   }
 
   private processReadings(): void {
     this.isLoading = true;
-    
+
     if (!this.readings || this.readings.length === 0) {
-      this.chartData = { 
+      this.chartData = {
         datasets: [],
         labels: []
       };
+      this.currentValue = null;
+      this.previousValue = null;
+      this.trendDirection = 'none';
       this.isLoading = false;
+      this.cdr.markForCheck();
       return;
     }
 
-    // Sort readings by timestamp
-    const sortedReadings = [...this.readings].sort((a, b) => 
+    // Sort readings by timestamp (ensure latest is last)
+    const sortedReadings = [...this.readings].sort((a, b) =>
       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
+
+    // Get the latest reading for current value display
+    const latestReading = sortedReadings[sortedReadings.length - 1];
     
+    // Store previous value for trend calculation
+    if (sortedReadings.length > 1) {
+      this.previousValue = sortedReadings[sortedReadings.length - 2].value;
+    } else {
+      this.previousValue = null;
+    }
+    
+    this.currentValue = latestReading ? latestReading.value : null;
+    
+    // Calculate trend direction
+    this.calculateTrend();
+
     // Extract timestamps and values
     const timestamps = sortedReadings.map(r => {
       const date = new Date(r.timestamp);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     });
-    
+
     const values = sortedReadings.map(r => r.value);
-    
-    // Determine colors based on sensor type
-    let borderColor = '#3a86ff'; // Default blue
-    let backgroundColor = 'rgba(58, 134, 255, 0.1)';
-    
-    if (this.sensorType === 'temperature' || this.sensorType === 'celsius') {
-      borderColor = '#4caf50'; // Green
-      backgroundColor = 'rgba(76, 175, 80, 0.1)';
-    } else if (this.sensorType === 'humidity' || this.sensorType === 'percent') {
-      borderColor = '#03a9f4'; // Light blue
-      backgroundColor = 'rgba(3, 169, 244, 0.1)';
-    } else if (this.sensorType === 'voltage' || this.sensorType === 'volts') {
-      borderColor = '#f44336'; // Red
-      backgroundColor = 'rgba(244, 67, 54, 0.1)';
-    }
-    
-    // Update chart data with simpler configuration
+
+    // Update chart data
     this.chartData = {
       labels: timestamps,
       datasets: [
         {
           data: values,
-          label: this.getLabelForSensorType(),
-          borderColor: borderColor,
-          backgroundColor: backgroundColor,
-          pointBackgroundColor: '#ffffff',
-          pointBorderColor: borderColor,
-          pointHoverBackgroundColor: borderColor,
-          pointHoverBorderColor: '#ffffff',
-          fill: true
+          label: this.sensorName,
+          borderColor: '#FFFFFF', // White line
+          pointBackgroundColor: '#FFFFFF',
+          pointBorderColor: '#FFFFFF',
+          pointHoverBackgroundColor: '#FFFFFF',
+          pointHoverBorderColor: 'rgba(255, 255, 255, 0.8)',
+          fill: false
         }
       ]
     };
-    
-    this.updateLastUpdated();
+
+    this.updateLastUpdated(latestReading?.timestamp);
     this.isLoading = false;
+    this.cdr.markForCheck();
   }
 
-  private getLabelForSensorType(): string {
-    switch (this.sensorType) {
-      case 'temperature':
-        return 'Temperature (°C)';
-      case 'voltage':
-        return 'Voltage (V)';
-      case 'humidity':
-        return 'Humidity (%)';
-      default:
-        return 'Value';
+  // Calculate trend direction based on current and previous values
+  private calculateTrend(): void {
+    if (this.currentValue === null || this.previousValue === null) {
+      this.trendDirection = 'none';
+      return;
+    }
+    
+    const difference = this.currentValue - this.previousValue;
+    
+    // Add a small threshold to avoid showing trends for tiny fluctuations
+    const threshold = 0.1;
+    
+    if (difference > threshold) {
+      this.trendDirection = 'up';
+    } else if (difference < -threshold) {
+      this.trendDirection = 'down';
+    } else {
+      this.trendDirection = 'none';
     }
   }
 
-  private updateLastUpdated(): void {
+  // Helper to get the unit symbol
+  getUnitSymbol(): string {
+    switch (this.sensorType) {
+      case 'temperature':
+      case 'celsius':
+        return '°C';
+      case 'voltage':
+      case 'volts':
+        return 'V';
+      case 'humidity':
+      case 'percent':
+        return '%';
+      default:
+        return '';
+    }
+  }
+
+  // Helper to format the current value
+  getFormattedCurrentValue(): string {
+    if (this.currentValue === null || this.currentValue === undefined) {
+      return 'N/A';
+    }
+    return `${this.currentValue.toFixed(1)}${this.getUnitSymbol()}`;
+  }
+
+  // Format relative time (e.g., "5 minutes ago")
+  getRelativeTime(): string {
+    if (!this.lastUpdated) {
+      return 'never';
+    }
+    
     const now = new Date();
-    this.lastUpdated = now.toISOString();
+    const updated = new Date(this.lastUpdated);
+    const diffMs = now.getTime() - updated.getTime();
+    const diffMins = Math.round(diffMs / 60000);
+    
+    if (diffMins < 1) {
+      return 'just now';
+    } else if (diffMins === 1) {
+      return '1 minute ago';
+    } else if (diffMins < 60) {
+      return `${diffMins} minutes ago`;
+    } else if (diffMins < 120) {
+      return '1 hour ago';
+    } else {
+      const hours = Math.floor(diffMins / 60);
+      return `${hours} hours ago`;
+    }
+  }
+
+  private updateLastUpdated(latestTimestamp?: string): void {
+    const timestamp = latestTimestamp ? new Date(latestTimestamp) : new Date();
+    this.lastUpdated = timestamp.toISOString();
+  }
+
+  // Helper to get icon based on sensor type
+  getMetricIcon(): string {
+    switch (this.sensorType) {
+      case 'temperature':
+      case 'celsius':
+        return 'thermostat';
+      case 'voltage':
+      case 'volts':
+        return 'flash_on';
+      case 'humidity':
+      case 'percent':
+        return 'water_drop';
+      default:
+        return 'help_outline';
+    }
   }
 }

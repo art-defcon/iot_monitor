@@ -75,30 +75,12 @@ interface Reading {
 
           <div class="dashboard-cards">
             <div *ngFor="let sensor of temperatureSensors" class="sensor-card">
-              <div class="sensor-header">
-                <h4>{{ sensor.name }}</h4>
-                <span class="sensor-status status-active"></span>
-              </div>
-              
               <app-sensor-chart 
                 [readings]="sensor.readings" 
-                [sensorType]="'celsius'">
+                [sensorType]="'celsius'"
+                [sensorName]="sensor.name">
               </app-sensor-chart>
               
-              <div class="sensor-stats">
-                <div class="stat">
-                  <span class="stat-label">Avg</span>
-                  <span class="stat-value">{{ getAverage(sensor.readings) | number:'1.1-1' }}°C</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Min</span>
-                  <span class="stat-value">{{ getMin(sensor.readings) | number:'1.1-1' }}°C</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Max</span>
-                  <span class="stat-value">{{ getMax(sensor.readings) | number:'1.1-1' }}°C</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -130,23 +112,10 @@ interface Reading {
               
               <app-sensor-chart 
                 [readings]="sensor.readings" 
-                [sensorType]="'percent'">
+                [sensorType]="'percent'"
+                [sensorName]="sensor.name">
               </app-sensor-chart>
               
-              <div class="sensor-stats">
-                <div class="stat">
-                  <span class="stat-label">Avg</span>
-                  <span class="stat-value">{{ getAverage(sensor.readings) | number:'1.1-1' }}%</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Min</span>
-                  <span class="stat-value">{{ getMin(sensor.readings) | number:'1.1-1' }}%</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Max</span>
-                  <span class="stat-value">{{ getMax(sensor.readings) | number:'1.1-1' }}%</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -178,23 +147,10 @@ interface Reading {
               
               <app-sensor-chart 
                 [readings]="sensor.readings" 
-                [sensorType]="'volts'">
+                [sensorType]="'volts'"
+                [sensorName]="sensor.name">
               </app-sensor-chart>
               
-              <div class="sensor-stats">
-                <div class="stat">
-                  <span class="stat-label">Avg</span>
-                  <span class="stat-value">{{ getAverage(sensor.readings) | number:'1.1-1' }}V</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Min</span>
-                  <span class="stat-value">{{ getMin(sensor.readings) | number:'1.1-1' }}V</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Max</span>
-                  <span class="stat-value">{{ getMax(sensor.readings) | number:'1.1-1' }}V</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -382,15 +338,12 @@ interface Reading {
     .sensor-card {
       background: var(--card-bg);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
       padding: var(--spacing-3);
-      border: 1px solid var(--border-color);
       transition: all var(--transition-normal);
     }
     
     .sensor-card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
       border-color: var(--primary-light);
     }
     
@@ -426,31 +379,6 @@ interface Reading {
       box-shadow: 0 0 0 2px rgba(var(--success-color-rgb), 0.2);
     }
     
-    .sensor-stats {
-      display: flex;
-      justify-content: space-between;
-      padding-top: var(--spacing-2);
-      border-top: 1px solid var(--border-color);
-      margin-top: var(--spacing-2);
-    }
-    
-    .stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .stat-label {
-      font-size: var(--font-size-xs);
-      color: var(--text-secondary);
-      margin-bottom: 2px;
-    }
-    
-    .stat-value {
-      font-size: var(--font-size-sm);
-      font-weight: var(--font-weight-semibold);
-      color: var(--text-primary);
-    }
     
     @media (max-width: 1200px) {
       .dashboard-cards {

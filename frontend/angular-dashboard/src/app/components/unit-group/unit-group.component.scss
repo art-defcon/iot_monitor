@@ -6,46 +6,52 @@
 .dashboard-groups {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
-  
+  gap: 24px; // Increased gap between groups
+
   .sensor-group-card {
     background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    border-radius: 6px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
     overflow: hidden;
-    
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.42), 0 4px 25px 0 rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    // Color variations for group headers - Material Dashboard style
     &.card-primary .group-header {
-      background: linear-gradient(60deg, var(--primary-color), var(--primary-dark));
+      background: linear-gradient(60deg, #ab47bc, #8e24aa); // Purple
     }
-    
+
     &.card-success .group-header {
-      background: linear-gradient(60deg, var(--success-color), #2e7d32);
+      background: linear-gradient(60deg, #66bb6a, #43a047); // Green
     }
-    
+
     &.card-warning .group-header {
-      background: linear-gradient(60deg, var(--warning-color), #e65100);
+      background: linear-gradient(60deg, #ffa726, #fb8c00); // Orange
     }
-    
+
     &.card-danger .group-header {
-      background: linear-gradient(60deg, var(--danger-color), #b71c1c);
+      background: linear-gradient(60deg, #ef5350, #e53935); // Red
     }
-    
+
     &.card-info .group-header {
-      background: linear-gradient(60deg, var(--info-color), #0277bd);
+      background: linear-gradient(60deg, #26c6da, #00acc1); // Blue
     }
-    
+
     .group-header {
       color: white;
-      padding: var(--spacing-3) var(--spacing-6);
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .group-title {
         display: flex;
         align-items: center;
-        gap: var(--spacing-3);
-        
+        gap: 12px;
+
         .unit-icon {
           width: 40px;
           height: 40px;
@@ -54,147 +60,71 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          
+
           mat-icon {
             font-size: 24px;
             width: 24px;
             height: 24px;
           }
         }
-        
+
         h3 {
           margin: 0;
-          font-size: var(--font-size-xl);
-          font-weight: var(--font-weight-medium);
+          font-size: 18px;
+          font-weight: 300;
+          font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
         }
       }
-      
+
       .group-info {
         display: flex;
         align-items: center;
-        gap: var(--spacing-3);
-        font-size: var(--font-size-md);
+        gap: 12px;
+        font-size: 14px;
         opacity: 0.9;
-        
+
         .mock-data-badge {
           background: rgba(255, 255, 255, 0.2);
           padding: 2px 8px;
           border-radius: 12px;
-          font-size: var(--font-size-xs);
-          font-weight: var(--font-weight-medium);
+          font-size: 12px;
+          font-weight: 500;
         }
       }
     }
-    
+
     .group-description {
-      padding: var(--spacing-3) var(--spacing-6);
-      border-bottom: 1px solid var(--border-color);
-      
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+
       p {
         margin: 0;
-        color: var(--text-secondary);
-        font-size: var(--font-size-sm);
+        color: #999;
+        font-size: 14px;
       }
     }
   }
 }
 
+// Material Dashboard inspired grid layout
 .dashboard-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
-  padding: var(--spacing-4) var(--spacing-6) var(--spacing-6);
-  
-  @media (max-width: 1200px) {
+  grid-template-columns: repeat(4, 1fr); // 4 charts per row
+  gap: 20px; // Consistent gap between cards
+  padding: 20px; // Consistent padding
+
+  // Responsive breakpoints
+  @media (max-width: 1400px) { // 3 columns for large tablets/smaller desktops
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 992px) { // 2 columns for tablets
     grid-template-columns: repeat(2, 1fr);
   }
-  
-  @media (max-width: 768px) {
+
+  @media (max-width: 768px) { // 1 column for mobile
     grid-template-columns: 1fr;
-  }
-  
-  .sensor-card, .skeleton-card {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    padding: var(--spacing-3);
-    border: 1px solid var(--border-color);
-    transition: all var(--transition-normal);
-    
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary-light);
-    }
-    
-    .sensor-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--spacing-2);
-      padding-bottom: var(--spacing-1);
-      border-bottom: 1px solid var(--border-color);
-      
-      h4 {
-        margin: 0;
-        font-size: var(--font-size-sm);
-        font-weight: var(--font-weight-semibold);
-        color: var(--text-primary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 85%;
-      }
-      
-      .sensor-status {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        
-        &.status-active {
-          background-color: var(--success-color);
-          box-shadow: 0 0 0 2px rgba(var(--success-color-rgb), 0.2);
-        }
-        
-        &.status-warning {
-          background-color: var(--warning-color);
-          box-shadow: 0 0 0 2px rgba(var(--warning-color-rgb), 0.2);
-        }
-        
-        &.status-inactive {
-          background-color: var(--danger-color);
-          box-shadow: 0 0 0 2px rgba(var(--danger-color-rgb), 0.2);
-        }
-      }
-    }
-    
-    // Stats below the chart
-    .sensor-stats {
-      display: flex;
-      justify-content: space-between;
-      padding-top: var(--spacing-2);
-      border-top: 1px solid var(--border-color);
-      margin-top: var(--spacing-2);
-      
-      .stat {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        
-        .stat-label {
-          font-size: var(--font-size-xs);
-          color: var(--text-secondary);
-          margin-bottom: 2px;
-        }
-        
-        .stat-value {
-          font-size: var(--font-size-sm);
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-primary);
-        }
-      }
-    }
+    gap: 16px; // Reduce gap on mobile
   }
 }
 
@@ -202,39 +132,39 @@
 .error-card {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
-  background-color: rgba(var(--danger-color-rgb), 0.1);
-  border-left: 4px solid var(--danger-color);
-  padding: var(--spacing-4) var(--spacing-6);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-6);
-  
+  gap: 16px;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 4px solid #f44336;
+  padding: 16px 24px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+
   mat-icon {
-    color: var(--danger-color);
+    color: #f44336;
     font-size: 24px;
     width: 24px;
     height: 24px;
   }
-  
+
   .error-details {
     h4 {
-      margin: 0 0 var(--spacing-1);
-      color: var(--danger-color);
-      font-weight: var(--font-weight-semibold);
+      margin: 0 0 4px;
+      color: #f44336;
+      font-weight: 500;
     }
-    
+
     p {
       margin: 0;
-      color: var(--text-secondary);
+      color: #666;
     }
   }
 }
 
 // Loading state
 .loading {
-  margin-bottom: var(--spacing-6);
-  
+  margin-bottom: 24px;
+
   mat-progress-bar {
-    margin-bottom: var(--spacing-6);
+    margin-bottom: 24px;
   }
 }

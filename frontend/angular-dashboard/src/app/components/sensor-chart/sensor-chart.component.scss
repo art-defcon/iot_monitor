@@ -1,6 +1,183 @@
 @use 'chart-container';
 @use 'no-data';
-@use 'timestamp';
 @use 'loading-overlay';
 @use 'chartjs-tooltip';
 @use 'responsive';
+@use '@angular/material' as mat;
+
+// Material-inspired card with shadow
+.sensor-chart-card {
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease-in-out;
+  height: 100%;
+
+  &:hover {
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.42), 0 4px 25px 0 rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  // Apply different color themes based on sensor type
+  &.temperature, &.celsius {
+    .chart-area {
+      background: linear-gradient(60deg, #66bb6a, #43a047); // Green gradient
+    }
+  }
+  
+  &.humidity, &.percent {
+    .chart-area {
+      background: linear-gradient(60deg, #26c6da, #00acc1); // Blue gradient
+    }
+  }
+  
+  &.voltage, &.volts {
+    .chart-area {
+      background: linear-gradient(60deg, #ef5350, #e53935); // Red gradient
+    }
+  }
+}
+
+// Chart Area with colored backgrounds based on sensor type
+.chart-area {
+  padding: 0;
+  position: relative;
+  height: 150px; // Fixed height for the chart area
+  overflow: hidden;
+  
+  // Default background (green for temperature)
+  background: linear-gradient(60deg, #66bb6a, #43a047);
+  
+  .chart-container {
+    height: 100%;
+    position: relative;
+  }
+
+  // Ensure canvas fills the container
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+// Content Area Below Chart - Material Design inspired
+.chart-content {
+  padding: 15px;
+  text-align: left;
+  color: #3C4858;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+// Title styling
+.chart-title {
+  color: #3C4858;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 300;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  line-height: 1.4em;
+}
+
+// Divider line
+.divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 5px 0;
+}
+
+// Current value with trend indicator
+.current-value {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #3C4858;
+  
+  mat-icon {
+    margin-right: 8px;
+    color: #999;
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+  
+  .value {
+    font-weight: 400;
+  }
+  
+  .trend-indicator {
+    margin-left: 8px;
+    
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      margin-right: 0;
+      
+      &.trend-up {
+        color: #4caf50; // Green for upward trend
+      }
+      
+      &.trend-down {
+        color: #f44336; // Red for downward trend
+      }
+    }
+  }
+}
+
+// Timestamp at the bottom
+.chart-timestamp {
+  color: #999;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  margin-top: auto; // Push to bottom if there's extra space
+  
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 6px;
+  }
+}
+
+// Loading overlay styling
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  
+  mat-spinner ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: #fff !important; // White spinner
+  }
+}
+
+// No data message styling
+.no-data {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  z-index: 5;
+}
