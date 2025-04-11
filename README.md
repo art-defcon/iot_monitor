@@ -2,6 +2,8 @@
 
 This is my personal IoT monitoring system that I've been building to track sensors around my house. Here's the quick rundown:
 
+![IoT Monitor Dashboard Screenshot](https://github.com/art-defcon/iot_monitor/blob/main/public/screenshot_iot.png)
+
 ### Features
 - Real-time temperature/humidity monitoring
 - Device status tracking (battery levels, connectivity)
@@ -31,15 +33,15 @@ node test-data-generator.js
 ### 🔧 Tech Stack
 ```yaml
 Backend: 
-  - Java 17
-  - Spring Boot 3
+  - Java 21
+  - Spring Boot 3.4.4
   - PostgreSQL
   - Flyway
 
 Frontend:
-  - Angular 16
-  - Chart.js
-  - Material Design
+  - Angular 19
+  - Chart.js 4.4
+  - Angular Material 19.2
 
 Tools:
   - Maven
