@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { forkJoin, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { SensorChartComponent } from './components/sensor-chart/sensor-chart.component';
 import { MockDataService } from './services/mock-data.service';
 import { Gateway } from './models/gateway.model';
@@ -405,20 +407,39 @@ export class DemoDashboardComponent implements OnInit {
   constructor(private mockDataService: MockDataService) {}
 
   ngOnInit(): void {
-    // Get mock data for all gateways
-    this.mockDataService.getGateways().subscribe(gateways => {
-      gateways.forEach(gateway => {
-        this.mockDataService.getReadings(gateway.id, '', '').subscribe(readings => {
-          // Group readings by sensor type
-          const tempReadings = readings.filter(r => r.unit === 'celsius');
-          const humidityReadings = readings.filter(r => r.unit === 'percent');
-          const voltageReadings = readings.filter(r => r.unit === 'volts');
+    this.mockDataService.getGateways().pipe(
+      switchMap(gateways => {
+        if (!gateways || gateways.length === 0) {
+          // If no gateways, return an observable of an empty array
+          return of([]); 
+        }
+        // Create an array of observables, each fetching readings for one gateway
+        const readingObservables = gateways.map(gateway => 
+          this.mockDataService.getReadings(gateway.id, '', '')
+        );
+        // Use forkJoin to wait for all reading requests to complete
+        return forkJoin(readingObservables);
+      }),
+      map(readingsArray => {
+        // Flatten the array of arrays into a single array of all readings
+        return readingsArray.flat(); 
+      })
+    ).subscribe(allReadings => {
+      // Now process the combined list of readings
+      const tempReadings = allReadings.filter(r => r.unit === 'celsius');
+      const humidityReadings = allReadings.filter(r => r.unit === 'percent');
+      const voltageReadings = allReadings.filter(r => r.unit === 'volts');
 
-          // Map to sensor-chart compatible format
-          this.temperatureSensors = this.groupAndMapReadings(tempReadings);
-          this.humiditySensors = this.groupAndMapReadings(humidityReadings);
-          this.voltageSensors = this.groupAndMapReadings(voltageReadings);
-        });
+      // Map to sensor-chart compatible format ONCE with all data
+      this.temperatureSensors = this.groupAndMapReadings(tempReadings);
+      this.humiditySensors = this.groupAndMapReadings(humidityReadings);
+      this.voltageSensors = this.groupAndMapReadings(voltageReadings);
+      
+      // Optional: Log to confirm data is loaded
+      console.log('Demo dashboard data loaded:', {
+        temp: this.temperatureSensors.length,
+        humidity: this.humiditySensors.length,
+        voltage: this.voltageSensors.length
       });
     });
   }
