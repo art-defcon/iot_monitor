@@ -4,57 +4,74 @@ mat-form-field {
 
   ::ng-deep {
     .mat-mdc-form-field-subscript-wrapper {
-      display: none;
+      display: none; // Keep hiding hints/errors space
     }
 
     .mat-mdc-form-field-infix {
-      min-height: 48px;
+      min-height: 52px; // Slightly taller
       display: flex;
       align-items: center;
+      padding: var(--spacing-2) 0; // Adjust vertical padding
     }
 
     .mat-mdc-select-value {
       color: var(--text-primary);
-      font-weight: var(--font-weight-medium);
+      font-weight: var(--font-weight-regular); // Slightly lighter weight for value
     }
 
     .mat-mdc-select-arrow {
-      color: var(--primary-color);
+      color: var(--text-secondary); // Less prominent arrow
     }
 
     .mat-mdc-form-field-flex {
-      background-color: transparent;
+      background-color: var(--input-bg, var(--bg-secondary)); // Use input background variable or fallback
+      padding: 0 var(--spacing-3); // Horizontal padding inside the flex container
     }
 
     .mat-mdc-text-field-wrapper {
-      background-color: transparent;
-      border-radius: var(--radius-md);
+      background-color: transparent; // Wrapper itself is transparent
+      border-radius: var(--radius-lg); // Slightly larger radius
     }
 
+    // Outline styles
+    .mat-mdc-form-field-outline {
+      color: var(--border-color-subtle, var(--border-color)); // Use a subtle border color if available
+    }
+    .mat-mdc-form-field-outline-start,
+    .mat-mdc-form-field-outline-end,
+    .mat-mdc-form-field-outline-gap {
+      border-width: 1px; // Ensure consistent border width
+    }
+
+    // Focused state outline
+    &.mat-focused .mat-mdc-form-field-outline-thick {
+      color: var(--primary-color);
+      border-width: 2px; // Standard focus thickness
+    }
+
+    // Label styles
     .mat-mdc-form-field-label {
       display: flex;
       align-items: center;
       gap: var(--spacing-2);
       color: var(--text-secondary);
       font-weight: var(--font-weight-medium);
-      width: auto;
-      padding-right: var(--spacing-2);
+      width: auto; // Allow label to size naturally
+      padding-right: var(--spacing-2); // Space between label and content if floating
 
       .select-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-        margin-right: var(--spacing-2);
+        font-size: 20px; // Slightly smaller icon
+        width: 20px;
+        height: 20px;
+        margin-right: var(--spacing-1); // Less space after icon
         color: var(--primary-color);
       }
     }
 
-    .mat-mdc-form-field-outline {
-      color: var(--border-color);
-    }
-
-    .mat-mdc-form-field-outline-thick {
-      color: var(--primary-color);
+    // Adjust floating label position when focused or has value
+    &.mat-focused .mat-mdc-floating-label .mdc-floating-label,
+    &:not(.mat-form-field-no-label-float) .mat-mdc-form-field-has-value .mat-mdc-floating-label .mdc-floating-label {
+      transform: translateY(-140%) scale(0.75); // Standard float position
     }
   }
 }

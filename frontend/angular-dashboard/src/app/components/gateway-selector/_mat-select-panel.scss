@@ -1,42 +1,72 @@
 ::ng-deep {
   .mat-mdc-select-panel {
     background: var(--card-bg);
-    border-radius: var(--radius-md) !important;
-    box-shadow: var(--shadow-lg) !important;
+    border-radius: var(--radius-lg) !important; // Match form field radius
+    box-shadow: var(--shadow-xl) !important; // Slightly stronger shadow
     margin-top: var(--spacing-1);
+    border: 1px solid var(--border-color-subtle, var(--border-color)); // Add subtle border
 
     .gateway-option {
       display: flex;
       flex-direction: column;
-      padding: var(--spacing-2) var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-4); // Adjust padding
+      line-height: 1.4; // Improve readability
+
+      .gateway-name,
+      .gateway-location {
+        // Text Trimming Styles
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block; // Needed for ellipsis on block elements
+        max-width: 100%; // Ensure it doesn't overflow container
+      }
 
       .gateway-name {
         font-weight: var(--font-weight-medium);
         color: var(--text-primary);
+        font-size: var(--font-size-sm); // Slightly smaller base size
       }
 
       .gateway-location {
         font-size: var(--font-size-xs);
         color: var(--text-secondary);
-        margin-top: var(--spacing-1);
+        margin-top: 2px; // Reduce space slightly
       }
     }
 
     .mat-mdc-option {
-      &.mat-mdc-selected {
-        background: rgba(var(--primary-color-rgb), 0.05) !important;
+      min-height: 48px; // Ensure consistent option height
+      padding: 0 !important; // Remove default padding, use .gateway-option padding
+
+      &.mat-mdc-option-active, // Style for keyboard navigation focus
+      &:hover {
+        background: var(--bg-hover, rgba(var(--primary-color-rgb), 0.08)) !important;
 
         .gateway-name {
           color: var(--primary-color);
         }
       }
 
-      &:hover {
-        background: rgba(var(--primary-color-rgb), 0.08) !important;
+      &.mat-mdc-selected {
+        background: var(--bg-selected, rgba(var(--primary-color-rgb), 0.05)) !important;
 
         .gateway-name {
           color: var(--primary-color);
+          font-weight: var(--font-weight-semibold); // Make selected bolder
         }
+
+        &:hover {
+           background: var(--bg-selected-hover, rgba(var(--primary-color-rgb), 0.1)) !important; // Slightly darker hover on selected
+        }
+      }
+
+      // Style for the "No gateways" option
+      &[disabled] .gateway-option {
+         opacity: 0.6;
+         .gateway-name {
+           font-style: italic;
+         }
       }
     }
   }

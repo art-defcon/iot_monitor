@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core'; // Removed Input, OnInit, OnDestroy
 import { CommonModule, TitleCasePipe, DecimalPipe } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs'; // Removed Subscription
 import { SensorChartComponent } from '../sensor-chart/sensor-chart.component';
 import { DashboardService, UnitGroup } from '../../services/dashboard.service';
 
@@ -38,13 +38,13 @@ interface Reading {
     DecimalPipe
   ]
 })
-export class UnitGroupComponent implements OnInit, OnDestroy {
-  @Input() gatewayId!: string;
-  
+export class UnitGroupComponent { // Removed implements OnInit, OnDestroy
+  // Removed @Input() gatewayId!: string;
+
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
   unitGroups$: Observable<UnitGroup[]>;
-  
+
   // Skeleton data for placeholder UI
   skeletonGroups: UnitGroup[] = [
     {
@@ -66,8 +66,8 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       ]
     }
   ];
-  
-  private subscription: Subscription | null = null;
+
+  // Removed private subscription: Subscription | null = null;
 
   constructor(private dashboardService: DashboardService) {
     // Initialize mock data for skeleton UI
@@ -77,16 +77,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
     this.unitGroups$ = this.dashboardService.getUnitGroups();
   }
 
-  ngOnInit(): void {
-    // Check if we have a valid gatewayId
-    if (this.gatewayId) {
-      // Start auto-refresh of data
-      this.dashboardService.startAutoRefresh(this.gatewayId);
-    } else {
-      // If no gateway ID is provided, we'll use mock data
-      console.log('No gateway ID provided, using mock data');
-    }
-  }
+  // Removed ngOnInit() method
 
   /**
    * Initialize skeleton groups with mock data structure
@@ -120,13 +111,8 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       }
     ];
   }
-  
-  ngOnDestroy(): void {
-    // Clean up subscription when component is destroyed
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
+
+  // Removed ngOnDestroy() method
 
   /**
    * Generate mock readings for a sensor
@@ -135,15 +121,15 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
     const readings: Reading[] = [];
     const now = new Date();
     const seed = sensorId.charCodeAt(0) + sensorId.charCodeAt(sensorId.length - 1);
-    
+
     for (let i = 0; i < count; i++) {
       const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // hourly data
-      
+
       // Create a somewhat realistic pattern with some randomness
       // Use sine wave with different frequencies for different sensors
       const timeComponent = Math.sin((i + seed) * 0.2) * 5;
       const randomComponent = (Math.random() - 0.5) * 2;
-      
+
       // Base value depends on sensor type
       let baseValue = 20; // default
       if (sensorId.startsWith('temp')) {
@@ -153,15 +139,15 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       } else if (sensorId.startsWith('volt')) {
         baseValue = 11.5 + (seed % 2); // voltage around 11.5-13.5V
       }
-      
+
       const value = baseValue + timeComponent + randomComponent;
-      
+
       readings.push({
         timestamp: timestamp.toISOString(),
         value: parseFloat(value.toFixed(2))
       });
     }
-    
+
     return readings;
   }
 
@@ -170,7 +156,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
    */
   getMockStatValue(unit: string, type: 'avg' | 'min' | 'max'): string {
     const unitSymbol = this.getUnitSymbol(unit);
-    
+
     if (unit === 'celsius') {
       if (type === 'avg') return `22.5${unitSymbol}`;
       if (type === 'min') return `18.2${unitSymbol}`;
@@ -184,7 +170,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       if (type === 'min') return `11.8${unitSymbol}`;
       if (type === 'max') return `12.9${unitSymbol}`;
     }
-    
+
     return `--${unitSymbol}`;
   }
 
@@ -205,7 +191,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       'watts': 'W',
       'decibels': ' dB'
     };
-    
+
     return symbols[unit.toLowerCase()] || '';
   }
 
@@ -258,7 +244,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       'watts': 'bolt',
       'decibels': 'volume_up'
     };
-    
+
     return icons[unit.toLowerCase()] || 'sensors';
   }
 
@@ -279,7 +265,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       'watts': 'Power measurements in watts (W)',
       'decibels': 'Sound level measurements in decibels (dB)'
     };
-    
+
     return descriptions[unit.toLowerCase()] || `Measurements in ${unit}`;
   }
 
@@ -290,21 +276,25 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
     if (!sensor.readings || sensor.readings.length === 0) {
       return 'status-inactive';
     }
-    
+
     // Get the latest reading timestamp
-    const latestReading = sensor.readings[sensor.readings.length - 1];
+    // Find the reading with the maximum timestamp
+    const latestReading = sensor.readings.reduce((latest, current) => {
+        return new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest;
+    });
+
     const readingTime = new Date(latestReading.timestamp).getTime();
     const now = Date.now();
     const timeDiff = now - readingTime;
-    
+
     // If reading is less than 5 minutes old, consider it active
     if (timeDiff < 5 * 60 * 1000) {
       return 'status-active';
-    } 
+    }
     // If reading is less than 1 hour old, consider it warning
     else if (timeDiff < 60 * 60 * 1000) {
       return 'status-warning';
-    } 
+    }
     // Otherwise, consider it inactive/stale
     else {
       return 'status-inactive';
@@ -328,7 +318,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       'watts': 'card-danger',
       'decibels': 'card-warning'
     };
-    
+
     return colorMap[unit.toLowerCase()] || 'card-primary';
   }
 
@@ -346,7 +336,7 @@ export class UnitGroupComponent implements OnInit, OnDestroy {
       'amps': 'voltage',
       'watts': 'voltage'
     };
-    
+
     return typeMap[unit.toLowerCase()] || 'temperature';
   }
 }
