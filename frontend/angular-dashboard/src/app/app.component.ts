@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GatewayService } from './services/gateway.service';
-import { ApiService } from './services/api.service';
 import { Gateway } from './models/gateway.model';
 import { GatewaySelectorComponent } from './components/gateway-selector/gateway-selector.component';
 import { UnitGroupComponent } from './components/unit-group/unit-group.component';
@@ -11,7 +10,6 @@ import { DemoDashboardComponent } from './demo-dashboard.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
@@ -22,7 +20,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatTabsModule,
     MatSlideToggleModule,
     GatewaySelectorComponent,
     UnitGroupComponent,
@@ -38,10 +35,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           </div>
           <div class="header-actions">
             <div class="data-source-toggle">
-              <span class="toggle-label">Using {{ apiService.isUsingMockData() ? 'Mock' : 'Live' }} Data</span>
+              <span class="toggle-label">Using {{ showDemoView ? 'Mock' : 'Live' }} Data</span>
               <mat-slide-toggle 
-                [checked]="apiService.isUsingMockData()" 
-                (change)="toggleDataSource($event.checked)"
+                [checked]="showDemoView" 
+                (change)="showDemoView = $event.checked"
                 color="primary">
               </mat-slide-toggle>
             </div>
@@ -51,76 +48,78 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
       <main role="main">
         <div class="main-content">
-          <mat-tab-group>
-            <mat-tab label="Dashboard">
-              <div class="dashboard-container">
-                <div class="sidebar" role="navigation">
-                  <app-gateway-selector></app-gateway-selector>
-                </div>
-
-                <div class="content-area">
-                  <!-- Dashboard summary cards -->
-                  <div class="dashboard-summary">
-                    <div class="summary-card summary-card-primary">
-                      <div class="summary-icon">
-                        <mat-icon>sensors</mat-icon>
-                      </div>
-                      <div class="summary-details">
-                        <h4>Total Sensors</h4>
-                        <div class="summary-value">{{ selectedGateway ? '12' : '—' }}</div>
-                      </div>
-                    </div>
-                    
-                    <div class="summary-card summary-card-success">
-                      <div class="summary-icon">
-                        <mat-icon>check_circle</mat-icon>
-                      </div>
-                      <div class="summary-details">
-                        <h4>Active Sensors</h4>
-                        <div class="summary-value">{{ selectedGateway ? '10' : '—' }}</div>
-                      </div>
-                    </div>
-                    
-                    <div class="summary-card summary-card-warning">
-                      <div class="summary-icon">
-                        <mat-icon>warning</mat-icon>
-                      </div>
-                      <div class="summary-details">
-                        <h4>Warnings</h4>
-                        <div class="summary-value">{{ selectedGateway ? '2' : '—' }}</div>
-                      </div>
-                    </div>
-                    
-                    <div class="summary-card summary-card-danger">
-                      <div class="summary-icon">
-                        <mat-icon>error</mat-icon>
-                      </div>
-                      <div class="summary-details">
-                        <h4>Alerts</h4>
-                        <div class="summary-value">{{ selectedGateway ? '0' : '—' }}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Main dashboard content -->
-                  <div *ngIf="isLoading" class="loading-container">
-                    <div class="loading-content">
-                      <div class="skeleton-header"></div>
-                      <div class="skeleton-charts">
-                        <div class="skeleton-chart" *ngFor="let i of [1,2,3,4,5,6]"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Actual content -->
-                  <app-unit-group *ngIf="!isLoading" [gatewayId]="selectedGateway?.id || defaultGatewayId"></app-unit-group>
-                </div>
+          
+          <!-- Live Dashboard View -->
+          <div *ngIf="!showDemoView"> 
+            <div class="dashboard-container"> 
+              <div class="sidebar" role="navigation">
+                <app-gateway-selector></app-gateway-selector>
               </div>
-            </mat-tab>
-            <mat-tab label="Demo">
-              <app-demo-dashboard></app-demo-dashboard>
-            </mat-tab>
-          </mat-tab-group>
+              <div class="content-area">
+                <!-- Dashboard summary cards -->
+                <div class="dashboard-summary">
+                  <div class="summary-card summary-card-primary">
+                    <div class="summary-icon">
+                      <mat-icon>sensors</mat-icon>
+                    </div>
+                    <div class="summary-details">
+                      <h4>Total Sensors</h4>
+                      <div class="summary-value">{{ selectedGateway ? '12' : '—' }}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="summary-card summary-card-success">
+                    <div class="summary-icon">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <div class="summary-details">
+                      <h4>Active Sensors</h4>
+                      <div class="summary-value">{{ selectedGateway ? '10' : '—' }}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="summary-card summary-card-warning">
+                    <div class="summary-icon">
+                      <mat-icon>warning</mat-icon>
+                    </div>
+                    <div class="summary-details">
+                      <h4>Warnings</h4>
+                      <div class="summary-value">{{ selectedGateway ? '2' : '—' }}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="summary-card summary-card-danger">
+                    <div class="summary-icon">
+                      <mat-icon>error</mat-icon>
+                    </div>
+                    <div class="summary-details">
+                      <h4>Alerts</h4>
+                      <div class="summary-value">{{ selectedGateway ? '0' : '—' }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Main dashboard content -->
+                <div *ngIf="isLoading" class="loading-container">
+                  <div class="loading-content">
+                    <div class="skeleton-header"></div>
+                    <div class="skeleton-charts">
+                      <div class="skeleton-chart" *ngFor="let i of [1,2,3,4,5,6]"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actual content -->
+                <app-unit-group *ngIf="!isLoading" [gatewayId]="selectedGateway?.id || defaultGatewayId"></app-unit-group>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Dashboard View -->
+          <div *ngIf="showDemoView">
+            <app-demo-dashboard></app-demo-dashboard>
+          </div>
+
         </div>
       </main>
 
@@ -407,6 +406,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   `]
 })
 export class AppComponent implements OnInit {
+  showDemoView: boolean = false; // Added to control view
   selectedGateway: Gateway | null = null;
   isLoading: boolean = true;
   lastUpdated: Date = new Date();
@@ -414,7 +414,6 @@ export class AppComponent implements OnInit {
 
   constructor(
     public gatewayService: GatewayService,
-    public apiService: ApiService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -440,11 +439,6 @@ export class AppComponent implements OnInit {
       console.log('Forcing loading to complete');
       this.isLoading = false;
     }, 3000);
-  }
-
-  toggleDataSource(useMock: boolean): void {
-    this.apiService.toggleMockData(useMock);
-    this.refreshData();
   }
 
   refreshData(): void {
