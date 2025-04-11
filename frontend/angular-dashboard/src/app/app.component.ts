@@ -56,11 +56,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           <!-- Live Dashboard View -->
           <div *ngIf="!showDemoView">
             <div class="dashboard-container">
-              <div class="sidebar" role="navigation">
-                <!-- Removed old selector from sidebar -->
-                <!-- <app-gateway-selector></app-gateway-selector> -->
-                <!-- Sidebar content can go here if needed -->
-              </div>
               <div class="content-area">
                 <!-- Dashboard summary cards -->
                 <div class="dashboard-summary">
@@ -240,25 +235,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     }
 
     .dashboard-container {
-      display: flex;
-      gap: var(--spacing-4);
       margin-top: var(--spacing-4);
     }
 
-    .sidebar {
-      width: 250px; /* Keep sidebar width */
-      flex-shrink: 0;
-      /* Removed selector, so sidebar might be empty or need other content */
-      /* Add padding or border if needed for visual structure */
-       padding: var(--spacing-4);
-       background: white;
-       border-radius: var(--radius-lg);
-       box-shadow: var(--shadow-md);
-       height: fit-content; /* Adjust height based on content or design */
-    }
-
     .content-area {
-      flex: 1;
+      width: 100%;
     }
 
     .dashboard-summary {
@@ -400,15 +381,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     }
 
     @media (max-width: 768px) {
-      .dashboard-container {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        margin-bottom: var(--spacing-4); /* Add space below sidebar on mobile */
-      }
-
       .dashboard-summary {
         grid-template-columns: 1fr;
       }

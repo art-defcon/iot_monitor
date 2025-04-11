@@ -83,23 +83,12 @@ main {
     margin: 0 auto;
     padding: 0 var(--spacing-4);
 
-    .sidebar {
-      width: 250px;
-      padding-right: var(--spacing-4);
-    }
-
     .content-area {
       flex: 1;
     }
 
     @media (max-width: 768px) {
       flex-direction: column;
-      
-      .sidebar {
-        width: 100%;
-        padding-right: 0;
-        padding-bottom: var(--spacing-4);
-      }
     }
   }
 }
