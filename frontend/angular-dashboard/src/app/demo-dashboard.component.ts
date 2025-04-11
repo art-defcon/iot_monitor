@@ -30,8 +30,6 @@ interface SensorData {
   ],
   template: `
     <div class="demo-container">
-      <h1>IoT Monitor Demo Dashboard</h1>
-      
       <div class="dashboard-summary">
         <div class="summary-card summary-card-primary">
           <div class="summary-icon">
