@@ -1,0 +1,12 @@
+<div class="compact-gateway-selector-container">
+  <mat-icon class="selector-icon">router</mat-icon> <!-- Placeholder icon -->
+  <mat-form-field appearance="outline" class="compact-select">
+    <mat-label>Gateway</mat-label>
+    <mat-select [(value)]="selectedGatewayId" (selectionChange)="onGatewaySelected($event.value)">
+      <mat-option *ngIf="!(gateways$ | async)">Loading...</mat-option>
+      <mat-option *ngFor="let gateway of gateways$ | async" [value]="gateway.id">
+        {{ gateway.name }} ({{ gateway.id }})
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

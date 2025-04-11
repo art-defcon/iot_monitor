@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GatewayService } from './services/gateway.service';
 import { Gateway } from './models/gateway.model';
-import { GatewaySelectorComponent } from './components/gateway-selector/gateway-selector.component';
+// Removed old import: import { GatewaySelectorComponent } from './components/gateway-selector/gateway-selector.component';
 import { UnitGroupComponent } from './components/unit-group/unit-group.component';
 import { DemoDashboardComponent } from './demo-dashboard.component';
+import { CompactGatewaySelectorComponent } from './components/compact-gateway-selector/compact-gateway-selector.component'; // Added new import
 
 // Material imports
 import { MatIconModule } from '@angular/material/icon';
@@ -21,9 +22,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatButtonModule,
     MatSnackBarModule,
     MatSlideToggleModule,
-    GatewaySelectorComponent,
+    // Removed old component: GatewaySelectorComponent,
     UnitGroupComponent,
-    DemoDashboardComponent
+    DemoDashboardComponent,
+    CompactGatewaySelectorComponent // Added new component
   ],
   template: `
     <div class="app-container">
@@ -36,24 +38,28 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           <div class="header-actions">
             <div class="data-source-toggle">
               <span class="toggle-label">Using {{ showDemoView ? 'Mock' : 'Live' }} Data</span>
-              <mat-slide-toggle 
-                [checked]="showDemoView" 
+              <mat-slide-toggle
+                [checked]="showDemoView"
                 (change)="showDemoView = $event.checked"
                 color="primary">
               </mat-slide-toggle>
             </div>
+            <!-- Added new compact selector here -->
+            <app-compact-gateway-selector></app-compact-gateway-selector>
           </div>
         </div>
       </header>
 
       <main role="main">
         <div class="main-content">
-          
+
           <!-- Live Dashboard View -->
-          <div *ngIf="!showDemoView"> 
-            <div class="dashboard-container"> 
+          <div *ngIf="!showDemoView">
+            <div class="dashboard-container">
               <div class="sidebar" role="navigation">
-                <app-gateway-selector></app-gateway-selector>
+                <!-- Removed old selector from sidebar -->
+                <!-- <app-gateway-selector></app-gateway-selector> -->
+                <!-- Sidebar content can go here if needed -->
               </div>
               <div class="content-area">
                 <!-- Dashboard summary cards -->
@@ -67,7 +73,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
                       <div class="summary-value">{{ selectedGateway ? '12' : '—' }}</div>
                     </div>
                   </div>
-                  
+
                   <div class="summary-card summary-card-success">
                     <div class="summary-icon">
                       <mat-icon>check_circle</mat-icon>
@@ -77,7 +83,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
                       <div class="summary-value">{{ selectedGateway ? '10' : '—' }}</div>
                     </div>
                   </div>
-                  
+
                   <div class="summary-card summary-card-warning">
                     <div class="summary-icon">
                       <mat-icon>warning</mat-icon>
@@ -87,7 +93,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
                       <div class="summary-value">{{ selectedGateway ? '2' : '—' }}</div>
                     </div>
                   </div>
-                  
+
                   <div class="summary-card summary-card-danger">
                     <div class="summary-icon">
                       <mat-icon>error</mat-icon>
@@ -146,7 +152,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       min-height: 100vh;
       background-color: var(--bg-color);
     }
-    
+
     .dashboard-header {
       background-color: var(--primary-color);
       color: white;
@@ -154,7 +160,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       box-shadow: var(--shadow-lg);
       z-index: 10;
     }
-    
+
     .header-content {
       display: flex;
       justify-content: space-between;
@@ -163,25 +169,25 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       margin: 0 auto;
       width: 100%;
     }
-    
+
     .logo-container {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    
+
     .logo-icon {
       font-size: 2rem;
       height: 2rem;
       width: 2rem;
     }
-    
+
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1rem; /* Adjusted gap might be needed */
     }
-    
+
     .data-source-toggle {
       display: flex;
       align-items: center;
@@ -191,7 +197,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       padding: 0.25rem 0.75rem;
       border-radius: 1rem;
     }
-    
+
     .main-content {
       flex: 1;
       padding: 1rem;
@@ -199,14 +205,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       margin: 0 auto;
       width: 100%;
     }
-    
+
     .dashboard-footer {
       background-color: white;
       border-top: 1px solid var(--border-color);
       padding: 0.5rem 1rem;
       margin-top: auto;
     }
-    
+
     .footer-content {
       display: flex;
       justify-content: space-between;
@@ -215,7 +221,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       margin: 0 auto;
       width: 100%;
     }
-    
+
     .footer-info {
       display: flex;
       align-items: center;
@@ -223,38 +229,45 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       color: var(--text-secondary);
       font-size: 0.875rem;
     }
-    
+
     .separator {
       color: var(--border-color);
     }
-    
+
     .footer-actions {
       display: flex;
       gap: 0.5rem;
     }
-    
+
     .dashboard-container {
       display: flex;
       gap: var(--spacing-4);
       margin-top: var(--spacing-4);
     }
-    
+
     .sidebar {
-      width: 250px;
+      width: 250px; /* Keep sidebar width */
       flex-shrink: 0;
+      /* Removed selector, so sidebar might be empty or need other content */
+      /* Add padding or border if needed for visual structure */
+       padding: var(--spacing-4);
+       background: white;
+       border-radius: var(--radius-lg);
+       box-shadow: var(--shadow-md);
+       height: fit-content; /* Adjust height based on content or design */
     }
-    
+
     .content-area {
       flex: 1;
     }
-    
+
     .dashboard-summary {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: var(--spacing-4);
       margin-bottom: var(--spacing-6);
     }
-    
+
     .summary-card {
       background: white;
       border-radius: var(--radius-lg);
@@ -266,7 +279,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       position: relative;
       overflow: hidden;
     }
-    
+
     .summary-card::before {
       content: '';
       position: absolute;
@@ -275,23 +288,23 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       width: 100%;
       height: 4px;
     }
-    
+
     .summary-card-primary::before {
       background: linear-gradient(60deg, var(--primary-color), var(--primary-dark));
     }
-    
+
     .summary-card-success::before {
       background: linear-gradient(60deg, var(--success-color), #2e7d32);
     }
-    
+
     .summary-card-warning::before {
       background: linear-gradient(60deg, var(--warning-color), #e65100);
     }
-    
+
     .summary-card-danger::before {
       background: linear-gradient(60deg, var(--danger-color), #b71c1c);
     }
-    
+
     .summary-icon {
       background: linear-gradient(60deg, var(--primary-color), var(--primary-dark));
       color: white;
@@ -303,32 +316,32 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       justify-content: center;
       box-shadow: var(--shadow-md);
     }
-    
+
     .summary-card-success .summary-icon {
       background: linear-gradient(60deg, var(--success-color), #2e7d32);
     }
-    
+
     .summary-card-warning .summary-icon {
       background: linear-gradient(60deg, var(--warning-color), #e65100);
     }
-    
+
     .summary-card-danger .summary-icon {
       background: linear-gradient(60deg, var(--danger-color), #b71c1c);
     }
-    
+
     .summary-details h4 {
       margin: 0 0 var(--spacing-1);
       font-size: var(--font-size-md);
       color: var(--text-secondary);
       font-weight: var(--font-weight-medium);
     }
-    
+
     .summary-value {
       font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-bold);
       color: var(--text-primary);
     }
-    
+
     .loading-container {
       background: white;
       border-radius: var(--radius-lg);
@@ -336,13 +349,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       padding: var(--spacing-6);
       margin-bottom: var(--spacing-6);
     }
-    
+
     .loading-content {
       display: flex;
       flex-direction: column;
       gap: var(--spacing-6);
     }
-    
+
     .skeleton-header {
       height: 24px;
       background: var(--skeleton-color);
@@ -350,20 +363,20 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       width: 60%;
       animation: pulse 1.5s infinite;
     }
-    
+
     .skeleton-charts {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--spacing-4);
     }
-    
+
     .skeleton-chart {
       height: 200px;
       background: var(--skeleton-color);
       border-radius: var(--radius-md);
       animation: pulse 1.5s infinite;
     }
-    
+
     @keyframes pulse {
       0% {
         opacity: 0.6;
@@ -375,30 +388,31 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         opacity: 0.6;
       }
     }
-    
+
     @media (max-width: 1200px) {
       .dashboard-summary {
         grid-template-columns: repeat(2, 1fr);
       }
-      
+
       .skeleton-charts {
         grid-template-columns: repeat(2, 1fr);
       }
     }
-    
+
     @media (max-width: 768px) {
       .dashboard-container {
         flex-direction: column;
       }
-      
+
       .sidebar {
         width: 100%;
+        margin-bottom: var(--spacing-4); /* Add space below sidebar on mobile */
       }
-      
+
       .dashboard-summary {
         grid-template-columns: 1fr;
       }
-      
+
       .skeleton-charts {
         grid-template-columns: 1fr;
       }
@@ -422,7 +436,7 @@ export class AppComponent implements OnInit {
     this.gatewayService.selectedGateway$.subscribe(gateway => {
       this.selectedGateway = gateway;
       this.isLoading = true;
-      
+
       // Simulate loading delay
       setTimeout(() => {
         this.isLoading = false;
@@ -433,7 +447,7 @@ export class AppComponent implements OnInit {
     if (!this.selectedGateway) {
       this.loadDefaultData();
     }
-    
+
     // Force loading to complete after a delay
     setTimeout(() => {
       console.log('Forcing loading to complete');
@@ -444,7 +458,7 @@ export class AppComponent implements OnInit {
   refreshData(): void {
     this.isLoading = true;
     this.gatewayService.fetchGateways();
-    
+
     // Simulate loading delay
     setTimeout(() => {
       this.isLoading = false;
@@ -457,7 +471,7 @@ export class AppComponent implements OnInit {
     // If no gateway is selected, we'll use a default one for the skeleton UI
     this.defaultGatewayId = '81380b79-d725-4e80-baa7-0fe82cf0993e'; // Match the first gateway ID from mock data
     this.isLoading = true;
-    
+
     // Simulate loading delay
     setTimeout(() => {
       this.isLoading = false;

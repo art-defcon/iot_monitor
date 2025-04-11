@@ -8,13 +8,14 @@
       <div class="header-actions">
         <div class="data-source-toggle">
           <span class="toggle-label">Using {{ apiService.isUsingMockData() ? 'Mock' : 'Live' }} Data</span>
-          <mat-slide-toggle 
-            [checked]="apiService.isUsingMockData()" 
+          <mat-slide-toggle
+            [checked]="apiService.isUsingMockData()"
             (change)="toggleDataSource($event.checked)"
             color="primary">
           </mat-slide-toggle>
         </div>
-        <app-gateway-selector></app-gateway-selector>
+        <!-- Replaced old selector with the new compact one -->
+        <app-compact-gateway-selector></app-compact-gateway-selector>
       </div>
     </div>
   </header>
@@ -36,7 +37,7 @@
               <div class="summary-value">{{ selectedGateway ? '12' : '—' }}</div>
             </div>
           </div>
-          
+
           <div class="summary-card summary-card-success">
             <div class="summary-icon">
               <mat-icon>check_circle</mat-icon>
@@ -46,7 +47,7 @@
               <div class="summary-value">{{ selectedGateway ? '10' : '—' }}</div>
             </div>
           </div>
-          
+
           <div class="summary-card summary-card-warning">
             <div class="summary-icon">
               <mat-icon>warning</mat-icon>
@@ -56,7 +57,7 @@
               <div class="summary-value">{{ selectedGateway ? '2' : '—' }}</div>
             </div>
           </div>
-          
+
           <div class="summary-card summary-card-danger">
             <div class="summary-icon">
               <mat-icon>error</mat-icon>

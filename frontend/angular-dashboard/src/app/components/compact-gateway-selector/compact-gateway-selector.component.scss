@@ -1,0 +1,44 @@
+.compact-gateway-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; // Space between icon and select
+}
+
+.selector-icon {
+  // Optional: Adjust icon size or color if needed
+  // font-size: 20px;
+  // color: rgba(0, 0, 0, 0.6);
+}
+
+.compact-select {
+  // Reduce default padding/margins of the form field
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none; // Hide the space for hints/errors
+  }
+
+  ::ng-deep .mat-mdc-form-field-flex {
+    padding-top: 0 !important;
+    margin-top: -0.25em; // Adjust vertical alignment if needed
+    padding-bottom: 0 !important;
+    margin-bottom: -0.75em; // Adjust vertical alignment if needed
+  }
+
+  ::ng-deep .mat-mdc-select-value {
+     padding-top: 0.25em; // Fine-tune text position
+  }
+
+  // Make the select box itself less tall
+  min-width: 150px; // Adjust as needed
+  max-width: 250px; // Adjust as needed
+}
+
+// Adjust outline appearance for compactness
+::ng-deep .compact-select .mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: 36px !important; // Reduce height
+}
+
+::ng-deep .compact-select .mat-mdc-floating-label {
+  top: 14px !important; // Adjust label position for reduced height
+}
