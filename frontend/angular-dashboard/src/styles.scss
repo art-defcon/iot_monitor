@@ -134,6 +134,18 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Override for logo-container h1 to ensure no bottom margin */
+.logo-container h1 {
+  margin-bottom: 0 !important;
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: white;
+  letter-spacing: -0.5px;
+  font-family: 'Pacifico', cursive;
+  line-height: 1; /* Ensure proper vertical alignment with the icon */
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-weight-semibold);
