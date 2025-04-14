@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@angular/animations": "^19.2.0",
-    "@angular/cdk": "^19.2.0",
-    "@angular/material": "^19.2.0"
-  }
-}
